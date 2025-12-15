@@ -1,0 +1,10 @@
+# Para manipulación básica (Unir, Separar, Rotar)
+PyPDF2
+
+# Para optimización y limpieza (Si implementas el módulo de compresión)
+pikepdf
+
+# Para conversión PDF a Imagen (Si implementas el módulo de conversión)
+pdf2image
+Pillow
+reportlab
