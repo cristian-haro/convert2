@@ -8,3 +8,9 @@ pikepdf
 pdf2image
 Pillow
 reportlab
+
+pdf2docx 
+docx2pdf 
+python-pptx
+PyMuPDF 
+comtypes

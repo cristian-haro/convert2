@@ -462,7 +462,7 @@ class PDFToolApp:
         self.img_archivo_path = tk.StringVar()
         self.img_formato_destino = tk.StringVar(value="PNG")
         
-        FORMATOS_COMUNES = ["PNG", "JPEG", "GIF", "BMP", "TIFF", "WEBP"]
+        FORMATOS_COMUNES = ["PNG", "JPEG", "ICO","GIF", "BMP", "TIFF", "WEBP"]
 
         tk.Label(self.frame_convertir_img, text="Selecciona la Imagen de Origen:", font=("Arial", 10)).pack(pady=5)
         
