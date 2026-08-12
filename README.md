@@ -7,6 +7,12 @@
 
 ---
 
+## 🌐 Acceso Online
+Puedes utilizar la plataforma de forma inmediata y segura en la siguiente URL oficial:
+👉 **[https://cristian-haro.github.io/convert2/](https://cristian-haro.github.io/convert2/)**
+
+---
+
 ## Utilidades Incluidas
 
 La plataforma cuenta con **12 herramientas** organizadas en tres categorías principales en el panel de control:
