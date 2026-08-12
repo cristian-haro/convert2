@@ -1,4 +1,4 @@
-# 🛠️ Convert2 - Herramienta Multifuncional de Archivos
+# Convert2 - Herramienta Multifuncional de Archivos
 
 **Convert2** es una solución "todo en uno" diseñada para facilitar la gestión de documentos PDF, Word e imágenes desde una interfaz moderna, limpia y 100% cliente. Sin suscripciones, sin subir tus archivos a ningún servidor y con privacidad garantizada.
 
@@ -7,21 +7,11 @@
 
 ---
 
-## 🌐 Versión Web
-
-Esta versión se ejecuta directamente en tu navegador. Puedes alojarla gratis en GitHub Pages o abrirla localmente.
-
-### 🚀 Cómo ejecutarla
-1. **Localmente:** Simplemente haz doble clic en el archivo [index.html](file:///c:/Users/crist/Documents/GitHub/convert2/index.html) para abrirlo en cualquier navegador web moderno.
-2. **En la Nube (GitHub Pages):** Sube los archivos a tu repositorio de GitHub y activa **GitHub Pages** desde la pestaña *Settings -> Pages* apuntando a la rama principal y a la raíz `/`.
-
----
-
-## ✨ Utilidades Incluidas
+## Utilidades Incluidas
 
 La plataforma cuenta con **12 herramientas** organizadas en tres categorías principales en el panel de control:
 
-### 📄 Documentos PDF
+### Documentos PDF
 * **Unir PDF:** Combina múltiples archivos PDF en un solo documento en el orden que desees (con controles para reordenar la lista).
 * **Separar PDF:** Extrae rangos específicos de páginas de un PDF para crear un nuevo archivo.
 * **Rotar PDF:** Corrige la orientación de todas las páginas de tu archivo (90°, 180°, 270°).
@@ -32,14 +22,14 @@ La plataforma cuenta con **12 herramientas** organizadas en tres categorías pri
 * **Word a PDF:** Convierte tus documentos de Microsoft Word (.docx) a archivos PDF de forma local en tu navegador.
 * **PDF a Word:** Extrae el texto de tu PDF y genera un archivo Word editable (.docx) de forma totalmente privada.
 
-### 🖼️ Edición de Imágenes
+### Edición de Imágenes
 * **Convertidor de Formatos:** Cambia el formato de tus imágenes entre PNG, JPG, WEBP, GIF, BMP, y crea **iconos (.ICO)** de Windows con soporte de transparencia.
 * **Comprimir Imagen:** Reduce el peso y la resolución de tus imágenes (JPG/WEBP) ajustando un deslizador de calidad y viendo el tamaño final estimado en tiempo real.
 * **Recortar y Redimensionar:** Ajusta la escala en píxeles (manteniendo la relación de aspecto) y recorta márgenes específicos (X, Y, Ancho y Alto) de tus fotos.
 * **Marca de Agua:** Añade un texto personalizado con transparencia centrado sobre tus imágenes.
 
-### 💼 Texto y Oficina
+### Texto y Oficina
 * **Extraer Texto:** Lee y extrae el texto bruto seleccionable de documentos **PDF** y de archivos Word **.DOCX** (Microsoft Word) descargándolo en un archivo `.txt`.
 
-### 🔒 Información y Privacidad
+### Información y Privacidad
 * **Privacidad Garantizada:** Un apartado dedicado en el panel de control que detalla con total transparencia cómo y por qué Convert2 garantiza el anonimato y la seguridad de los archivos de los usuarios al procesarlos de manera 100% local.
