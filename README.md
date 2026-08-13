@@ -33,6 +33,7 @@ La plataforma cuenta con **12 herramientas** organizadas en tres categorías pri
 * **Comprimir Imagen:** Reduce el peso y la resolución de tus imágenes (JPG/WEBP) ajustando un deslizador de calidad y viendo el tamaño final estimado en tiempo real.
 * **Recortar y Redimensionar:** Ajusta la escala en píxeles (manteniendo la relación de aspecto) y recorta márgenes específicos (X, Y, Ancho y Alto) de tus fotos.
 * **Marca de Agua:** Añade un texto personalizado con transparencia centrado sobre tus imágenes.
+* **Eliminar Fondo:** Remueve el fondo de tus imágenes de forma automática y 100% local en tu navegador utilizando un modelo de Inteligencia Artificial (WebAssembly y ONNX).
 
 ### Texto y Oficina
 * **Extraer Texto:** Lee y extrae el texto bruto seleccionable de documentos **PDF** y de archivos Word **.DOCX** (Microsoft Word) descargándolo en un archivo `.txt`.

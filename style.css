@@ -1429,3 +1429,33 @@ body {
     }
 }
 
+/* Progress Bar for Local AI Models */
+.progress-container-local {
+    margin-top: 1.5rem;
+}
+
+.progress-bar-label-local {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--color-text);
+    display: flex;
+    justify-content: space-between;
+}
+
+.progress-bar-track-local {
+    background-color: var(--border-color, rgba(255, 255, 255, 0.08));
+    border-radius: 9999px;
+    height: 10px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+}
+
+.progress-bar-fill-local {
+    background: var(--accent-gradient, linear-gradient(135deg, #a78bfa, #8b5cf6, #6d28d9));
+    width: 0%;
+    height: 100%;
+    transition: width 0.1s ease;
+    box-shadow: 0 0 10px var(--accent-glow, rgba(139, 92, 246, 0.3));
+}
+
