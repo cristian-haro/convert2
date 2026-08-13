@@ -27,6 +27,8 @@ La plataforma cuenta con **12 herramientas** organizadas en tres categorías pri
 * **Proteger / Desproteger PDF:** Añade una contraseña de apertura para encriptar tu PDF (RC4 de 128 bits) o elimina la contraseña de un PDF protegido de manera local.
 * **Word a PDF:** Convierte tus documentos de Microsoft Word (.docx) a archivos PDF de forma local en tu navegador.
 * **PDF a Word:** Extrae el texto de tu PDF y genera un archivo Word editable (.docx) de forma totalmente privada.
+* **Organizar PDF:** Reordena, rota y elimina páginas de tu documento PDF de forma interactiva y visual.
+* **Comprimir PDF:** Reduce drásticamente el peso de tus PDFs rasterizando sus páginas como imágenes JPEG optimizadas.
 
 ### Edición de Imágenes
 * **Convertidor de Formatos:** Cambia el formato de tus imágenes entre PNG, JPG, WEBP, GIF, BMP, y crea **iconos (.ICO)** de Windows con soporte de transparencia.
@@ -34,9 +36,12 @@ La plataforma cuenta con **12 herramientas** organizadas en tres categorías pri
 * **Recortar y Redimensionar:** Ajusta la escala en píxeles (manteniendo la relación de aspecto) y recorta márgenes específicos (X, Y, Ancho y Alto) de tus fotos.
 * **Marca de Agua:** Añade un texto personalizado con transparencia centrado sobre tus imágenes.
 * **Eliminar Fondo:** Remueve el fondo de tus imágenes de forma automática y 100% local en tu navegador utilizando un modelo de Inteligencia Artificial (WebAssembly y ONNX).
+* **Limpiar EXIF:** Remueve información oculta de cámara, autor y coordenadas GPS (metadatos EXIF/IPTC/XMP) de fotos JPEG y PNG para proteger tu privacidad.
 
 ### Texto y Oficina
 * **Extraer Texto:** Lee y extrae el texto bruto seleccionable de documentos **PDF** y de archivos Word **.DOCX** (Microsoft Word) descargándolo en un archivo `.txt`.
+* **OCR Local:** Extrae texto editable de imágenes y PDFs escaneados utilizando procesamiento de reconocimiento óptico de caracteres local (Tesseract.js).
+* **Comparar Textos:** Detecta y resalta diferencias side-by-side (lado a lado) o unificadas entre dos textos o archivos `.txt` en tiempo real.
 
 ### Información y Privacidad
 * **Privacidad Garantizada:** Un apartado dedicado en el panel de control que detalla con total transparencia cómo y por qué Convert2 garantiza el anonimato y la seguridad de los archivos de los usuarios al procesarlos de manera 100% local.

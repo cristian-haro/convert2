@@ -26,11 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const tabId = item.getAttribute('data-tab');
+            if (!tabId) return;
             
             navItems.forEach(i => i.classList.remove('active'));
             tabPanels.forEach(p => p.classList.remove('active'));
             
-            item.classList.add('active');
+            // Sync active class on both desktop & mobile nav items
+            document.querySelectorAll(`.nav-item[data-tab="${tabId}"]`).forEach(i => i.classList.add('active'));
             document.getElementById(`panel-${tabId}`).classList.add('active');
             
             // Close mobile sidebar if open
@@ -1851,12 +1853,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // TOOL 11b: ELIMINAR FONDO DE IMAGEN (BACKGROUND REMOVAL) [NEW]
     // ----------------------------------------------------------------------
     let bgRemovalFile = null;
+    let bgRemovalOriginalUrl = null;
+    let bgRemovalResultBlob = null;
+    let bgRemovalResultUrl = null;
 
     setupDropzone('dropzone-eliminar-fondo', 'file-eliminar-fondo', (files) => {
         const file = files[0];
         if (file.type.startsWith('image/')) {
             bgRemovalFile = file;
             
+            // Clean up any old object URLs
+            cleanBgRemovalUrls();
+
             // Set image preview
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -1876,14 +1884,36 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('progress-bar-eliminar-fondo').style.width = '0%';
             document.getElementById('progress-percentage-eliminar-fondo').textContent = '0%';
             
+            // Hide comparison and secondary button
+            document.getElementById('result-comparison-eliminar-fondo').style.display = 'none';
+            document.getElementById('btn-reset-eliminar-fondo').style.display = 'none';
+            
+            // Reset main button text
+            const runButton = document.getElementById('btn-run-eliminar-fondo');
+            runButton.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Eliminar Fondo y Descargar';
+            
             showToast('Imagen cargada correctamente', 'success');
         } else {
             showToast('Por favor, selecciona un archivo de imagen válido.', 'warning');
         }
     });
 
+    function cleanBgRemovalUrls() {
+        if (bgRemovalOriginalUrl) {
+            URL.revokeObjectURL(bgRemovalOriginalUrl);
+            bgRemovalOriginalUrl = null;
+        }
+        if (bgRemovalResultUrl) {
+            URL.revokeObjectURL(bgRemovalResultUrl);
+            bgRemovalResultUrl = null;
+        }
+        bgRemovalResultBlob = null;
+    }
+
     function resetBgRemovalUI() {
         bgRemovalFile = null;
+        cleanBgRemovalUrls();
+        
         document.getElementById('dropzone-eliminar-fondo').style.display = 'block';
         document.getElementById('preview-eliminar-fondo').style.display = 'none';
         document.getElementById('actions-eliminar-fondo').style.display = 'none';
@@ -1891,12 +1921,26 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('progress-container-eliminar-fondo').style.display = 'none';
         document.getElementById('progress-bar-eliminar-fondo').style.width = '0%';
         document.getElementById('progress-percentage-eliminar-fondo').textContent = '0%';
+        
+        document.getElementById('result-comparison-eliminar-fondo').style.display = 'none';
+        document.getElementById('btn-reset-eliminar-fondo').style.display = 'none';
+        document.getElementById('img-orig-eliminar-fondo').src = '';
+        document.getElementById('img-res-eliminar-fondo').src = '';
     }
 
     document.getElementById('btn-remove-eliminar-fondo').addEventListener('click', resetBgRemovalUI);
+    document.getElementById('btn-reset-eliminar-fondo').addEventListener('click', resetBgRemovalUI);
 
     document.getElementById('btn-run-eliminar-fondo').addEventListener('click', async () => {
         if (!bgRemovalFile) return;
+
+        // If background removal has already run, this button works as a fast download button
+        if (bgRemovalResultBlob) {
+            const originalBase = bgRemovalFile.name.replace(/\.[^/.]+$/, "");
+            downloadBlob(bgRemovalResultBlob, `${originalBase}_sin_fondo.png`);
+            showToast('Imagen descargada con éxito', 'success');
+            return;
+        }
 
         const runButton = document.getElementById('btn-run-eliminar-fondo');
         const removeButton = document.getElementById('btn-remove-eliminar-fondo');
@@ -1932,18 +1976,801 @@ document.addEventListener('DOMContentLoaded', () => {
             // Run the background removal process
             const resultBlob = await removeBackground(bgRemovalFile, config);
 
-            // Once finished, download the processed image as PNG
+            // Store result blob and create object URL
+            bgRemovalResultBlob = resultBlob;
+            bgRemovalResultUrl = URL.createObjectURL(resultBlob);
+            bgRemovalOriginalUrl = URL.createObjectURL(bgRemovalFile);
+
+            // Set comparison images
+            document.getElementById('img-orig-eliminar-fondo').src = bgRemovalOriginalUrl;
+            document.getElementById('img-res-eliminar-fondo').src = bgRemovalResultUrl;
+
+            // Show comparison view
+            document.getElementById('result-comparison-eliminar-fondo').style.display = 'grid';
+            
+            // Hide progress bar since we are done
+            progressContainer.style.display = 'none';
+
+            // Once finished, download the processed image as PNG automatically
             const originalBase = bgRemovalFile.name.replace(/\.[^/.]+$/, "");
             downloadBlob(resultBlob, `${originalBase}_sin_fondo.png`);
 
-            showToast('¡Fondo eliminado con éxito!', 'success');
-            resetBgRemovalUI();
+            // Update action buttons
+            document.getElementById('btn-reset-eliminar-fondo').style.display = 'inline-flex';
+            runButton.innerHTML = '<i class="fa-solid fa-download"></i> Descargar Imagen';
+
+            showToast('¡Fondo eliminado con éxito y descargado!', 'success');
         } catch (error) {
             console.error(error);
             showToast('Ocurrió un error al procesar la imagen.', 'error');
         } finally {
             runButton.disabled = false;
             removeButton.disabled = false;
+            hideLoader();
+        }
+    });
+
+    // ----------------------------------------------------------------------
+    // TOOL 12b: ORGANIZAR PDF (PDF PAGE ORGANIZER) [NEW]
+    // ----------------------------------------------------------------------
+    let organizeFile = null;
+    let organizePagesList = []; // array of { id, base64Image, rotation: 0, originalIndex }
+    let organizePageIdCounter = 0;
+
+    setupDropzone('dropzone-organizar-pdf', 'file-organizar-pdf', async (files) => {
+        const file = files[0];
+        if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+            showLoader('Leyendo páginas de PDF...');
+            try {
+                organizeFile = file;
+                organizePagesList = [];
+                organizePageIdCounter = 0;
+                
+                const arrayBuffer = await file.arrayBuffer();
+                const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                const numPages = pdfDoc.numPages;
+
+                for (let i = 1; i <= numPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    // Render page preview in a tiny canvas (~150px width)
+                    const viewport = page.getViewport({ scale: 150 / page.getViewport({ scale: 1 }).width });
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+                    const base64Image = canvas.toDataURL('image/jpeg', 0.85);
+
+                    organizePagesList.push({
+                        id: organizePageIdCounter++,
+                        base64Image: base64Image,
+                        rotation: 0,
+                        originalIndex: i - 1
+                    });
+                }
+
+                document.getElementById('dropzone-organizar-pdf').style.display = 'none';
+                document.getElementById('preview-organizar-pdf').style.display = 'block';
+                document.getElementById('actions-organizar-pdf').style.display = 'flex';
+                
+                document.getElementById('name-organizar-pdf').textContent = file.name;
+                document.getElementById('size-organizar-pdf').textContent = formatBytes(file.size);
+                
+                updateOrganizeUI();
+                showToast('Páginas de PDF cargadas', 'success');
+            } catch (error) {
+                console.error(error);
+                showToast('Error al leer el PDF.', 'error');
+            } finally {
+                hideLoader();
+            }
+        } else {
+            showToast('Por favor, selecciona un PDF válido.', 'warning');
+        }
+    });
+
+    function resetOrganizeUI() {
+        organizeFile = null;
+        organizePagesList = [];
+        document.getElementById('dropzone-organizar-pdf').style.display = 'block';
+        document.getElementById('preview-organizar-pdf').style.display = 'none';
+        document.getElementById('actions-organizar-pdf').style.display = 'none';
+        document.getElementById('file-organizar-pdf').value = '';
+        document.getElementById('organizer-grid-pdf').innerHTML = '';
+    }
+
+    document.getElementById('btn-remove-organizar-pdf').addEventListener('click', resetOrganizeUI);
+
+    function updateOrganizeUI() {
+        const grid = document.getElementById('organizer-grid-pdf');
+        grid.innerHTML = '';
+
+        organizePagesList.forEach((page, index) => {
+            const card = document.createElement('div');
+            card.className = 'pdf-page-card';
+            card.setAttribute('data-id', page.id);
+            card.setAttribute('draggable', 'true');
+            card.innerHTML = `
+                <span class="pdf-page-number">${index + 1}</span>
+                <img src="${page.base64Image}" alt="Página ${index + 1}" style="transform: rotate(${page.rotation}deg);">
+                <div class="pdf-page-actions">
+                    <button class="btn-icon btn-rotate" title="Rotar 90°"><i class="fa-solid fa-rotate-right"></i></button>
+                    <button class="btn-icon btn-danger-hover btn-delete" title="Eliminar"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            `;
+
+            // Drag and Drop Event Listeners
+            card.addEventListener('dragstart', () => card.classList.add('dragging'));
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+                // Reconstruct page list based on DOM order
+                const newOrder = [...grid.querySelectorAll('.pdf-page-card')].map(c => {
+                    const pageId = parseInt(c.getAttribute('data-id'), 10);
+                    return organizePagesList.find(p => p.id === pageId);
+                });
+                organizePagesList = newOrder;
+                // Re-number labels in UI
+                grid.querySelectorAll('.pdf-page-card').forEach((c, idx) => {
+                    c.querySelector('.pdf-page-number').textContent = idx + 1;
+                });
+            });
+
+            // Action listeners
+            card.querySelector('.btn-rotate').addEventListener('click', () => {
+                page.rotation = (page.rotation + 90) % 360;
+                card.querySelector('img').style.transform = `rotate(${page.rotation}deg)`;
+            });
+
+            card.querySelector('.btn-delete').addEventListener('click', () => {
+                organizePagesList = organizePagesList.filter(p => p.id !== page.id);
+                card.remove();
+                // Re-number labels in UI
+                grid.querySelectorAll('.pdf-page-card').forEach((c, idx) => {
+                    c.querySelector('.pdf-page-number').textContent = idx + 1;
+                });
+                if (organizePagesList.length === 0) {
+                    showToast('Se eliminaron todas las páginas', 'warning');
+                    resetOrganizeUI();
+                }
+            });
+
+            grid.appendChild(card);
+        });
+
+        // Grid DragOver reordering
+        grid.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const draggingCard = document.querySelector('.pdf-page-card.dragging');
+            if (!draggingCard) return;
+            const afterElement = getDragAfterElement(grid, e.clientX, e.clientY);
+            if (afterElement == null) {
+                grid.appendChild(draggingCard);
+            } else {
+                grid.insertBefore(draggingCard, afterElement);
+            }
+        });
+    }
+
+    function getDragAfterElement(container, x, y) {
+        const draggableElements = [...container.querySelectorAll('.pdf-page-card:not(.dragging)')];
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const centerX = box.left + box.width / 2;
+            const centerY = box.top + box.height / 2;
+            const distance = Math.hypot(x - centerX, y - centerY);
+            if (distance < closest.distance) {
+                return { distance: distance, element: child };
+            } else {
+                return closest;
+            }
+        }, { distance: Number.POSITIVE_INFINITY }).element;
+    }
+
+    document.getElementById('btn-run-organizar-pdf').addEventListener('click', async () => {
+        if (!organizeFile || organizePagesList.length === 0) return;
+
+        showLoader('Generando nuevo PDF...');
+        try {
+            const srcBuffer = await organizeFile.arrayBuffer();
+            const srcDoc = await PDFLib.PDFDocument.load(srcBuffer);
+            const newDoc = await PDFLib.PDFDocument.create();
+
+            for (const pageState of organizePagesList) {
+                const [copiedPage] = await newDoc.copyPages(srcDoc, [pageState.originalIndex]);
+                const originalRotation = copiedPage.getRotation().angle;
+                copiedPage.setRotation(PDFLib.degrees((originalRotation + pageState.rotation) % 360));
+                newDoc.addPage(copiedPage);
+            }
+
+            const newBytes = await newDoc.save();
+            const blob = new Blob([newBytes], { type: 'application/pdf' });
+            const originalBase = organizeFile.name.replace(/\.[^/.]+$/, "");
+            
+            downloadBlob(blob, `${originalBase}_organizado.pdf`);
+            showToast('¡PDF reordenado con éxito!', 'success');
+            resetOrganizeUI();
+        } catch (error) {
+            console.error(error);
+            showToast('Error al generar el PDF.', 'error');
+        } finally {
+            hideLoader();
+        }
+    });
+
+    // ----------------------------------------------------------------------
+    // TOOL 12c: COMPRIMIR PDF (PDF COMPRESSOR) [NEW]
+    // ----------------------------------------------------------------------
+    let compressPdfFile = null;
+
+    setupDropzone('dropzone-compresor-pdf', 'file-compresor-pdf', (files) => {
+        const file = files[0];
+        if (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf')) {
+            compressPdfFile = file;
+            document.getElementById('dropzone-compresor-pdf').style.display = 'none';
+            document.getElementById('preview-compresor-pdf').style.display = 'block';
+            document.getElementById('actions-compresor-pdf').style.display = 'flex';
+            
+            document.getElementById('name-compresor-pdf').textContent = file.name;
+            document.getElementById('size-compresor-pdf').textContent = formatBytes(file.size);
+            showToast('PDF cargado para compresión', 'success');
+        } else {
+            showToast('Por favor, selecciona un PDF válido.', 'warning');
+        }
+    });
+
+    document.getElementById('compress-pdf-quality').addEventListener('input', (e) => {
+        document.getElementById('val-compress-pdf-quality').textContent = `${e.target.value}%`;
+    });
+
+    function resetCompressPdfUI() {
+        compressPdfFile = null;
+        document.getElementById('dropzone-compresor-pdf').style.display = 'block';
+        document.getElementById('preview-compresor-pdf').style.display = 'none';
+        document.getElementById('actions-compresor-pdf').style.display = 'none';
+        document.getElementById('file-compresor-pdf').value = '';
+    }
+
+    document.getElementById('btn-remove-compresor-pdf').addEventListener('click', resetCompressPdfUI);
+
+    document.getElementById('btn-run-compresor-pdf').addEventListener('click', async () => {
+        if (!compressPdfFile) return;
+
+        const dpi = parseInt(document.getElementById('compress-pdf-resolution').value, 10);
+        const quality = parseInt(document.getElementById('compress-pdf-quality').value, 10) / 100;
+
+        showLoader('Analizando PDF...');
+        try {
+            const arrayBuffer = await compressPdfFile.arrayBuffer();
+            const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const totalPages = pdfDoc.numPages;
+            
+            const newDoc = await PDFLib.PDFDocument.create();
+
+            for (let i = 1; i <= totalPages; i++) {
+                showLoader(`Comprimiendo PDF (Página ${i} de ${totalPages})...`);
+                
+                const page = await pdfDoc.getPage(i);
+                // 72 PDF points = 1 inch
+                const scale = dpi / 72;
+                const viewport = page.getViewport({ scale: scale });
+                
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                // Compress page image as JPEG
+                const jpegBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+                const imgBytes = await jpegBlob.arrayBuffer();
+                const embeddedImage = await newDoc.embedJpg(imgBytes);
+
+                // Add A4 or equivalent original dimension page
+                const newPage = newDoc.addPage([viewport.width / scale, viewport.height / scale]);
+                newPage.drawImage(embeddedImage, {
+                    x: 0,
+                    y: 0,
+                    width: newPage.getWidth(),
+                    height: newPage.getHeight()
+                });
+            }
+
+            showLoader('Empaquetando PDF comprimido...');
+            const compressedBytes = await newDoc.save();
+            const blob = new Blob([compressedBytes], { type: 'application/pdf' });
+            const originalBase = compressPdfFile.name.replace(/\.[^/.]+$/, "");
+
+            downloadBlob(blob, `${originalBase}_comprimido.pdf`);
+            showToast('¡PDF comprimido descargado!', 'success');
+            resetCompressPdfUI();
+        } catch (error) {
+            console.error(error);
+            showToast('Ocurrió un error al comprimir el PDF.', 'error');
+        } finally {
+            hideLoader();
+        }
+    });
+
+    // ----------------------------------------------------------------------
+    // TOOL 12d: LIMPIAR EXIF (METADATA STRIPPER) [NEW]
+    // ----------------------------------------------------------------------
+    let cleanExifFile = null;
+    let cleanExifBuffer = null;
+
+    setupDropzone('dropzone-limpiar-exif', 'file-limpiar-exif', async (files) => {
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+            cleanExifFile = file;
+            
+            // Set image preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('thumb-limpiar-exif').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            document.getElementById('dropzone-limpiar-exif').style.display = 'none';
+            document.getElementById('preview-limpiar-exif').style.display = 'block';
+            document.getElementById('actions-limpiar-exif').style.display = 'flex';
+            
+            document.getElementById('name-limpiar-exif').textContent = file.name;
+            document.getElementById('size-limpiar-exif').textContent = formatBytes(file.size);
+            
+            // Analyze Metadata content
+            cleanExifBuffer = await file.arrayBuffer();
+            analyzeMetadata(file.name, file.type, cleanExifBuffer);
+        } else {
+            showToast('Por favor, selecciona una imagen JPEG o PNG.', 'warning');
+        }
+    });
+
+    function analyzeMetadata(filename, type, buffer) {
+        const listEl = document.getElementById('meta-list-limpiar-exif');
+        listEl.innerHTML = '';
+        
+        const ext = filename.split('.').pop().toLowerCase();
+        
+        let hasExif = false;
+        let hasGps = false;
+        
+        // Basic scan using TextDecoder
+        const dec = new TextDecoder('utf-8', { fatal: false });
+        const textSection = dec.decode(new Uint8Array(buffer.slice(0, Math.min(buffer.byteLength, 15000))));
+        
+        if (ext === 'jpg' || ext === 'jpeg' || type === 'image/jpeg') {
+            hasExif = textSection.toLowerCase().includes('exif');
+            hasGps = textSection.toLowerCase().includes('gps');
+        } else if (ext === 'png' || type === 'image/png') {
+            hasExif = textSection.includes('tEXt') || textSection.includes('zTXt') || textSection.includes('iTXt') || textSection.includes('iCCP');
+        }
+
+        listEl.innerHTML += `<li><strong>Formato:</strong> ${type.toUpperCase()}</li>`;
+        listEl.innerHTML += `<li><strong>Metadatos Generales:</strong> ${hasExif ? '<span style="color:var(--danger-color);">Detectados</span>' : '<span style="color:var(--success-color);">Ninguno</span>'}</li>`;
+        if (type.includes('jpeg')) {
+            listEl.innerHTML += `<li><strong>Información de Geolocalización (GPS):</strong> ${hasGps ? '<span style="color:var(--danger-color);">Detectada</span>' : '<span style="color:var(--success-color);">Ninguna</span>'}</li>`;
+        }
+    }
+
+    function resetCleanExifUI() {
+        cleanExifFile = null;
+        cleanExifBuffer = null;
+        document.getElementById('dropzone-limpiar-exif').style.display = 'block';
+        document.getElementById('preview-limpiar-exif').style.display = 'none';
+        document.getElementById('actions-limpiar-exif').style.display = 'none';
+        document.getElementById('file-limpiar-exif').value = '';
+    }
+
+    document.getElementById('btn-remove-limpiar-exif').addEventListener('click', resetCleanExifUI);
+
+    function stripJpegMetadata(arrayBuffer) {
+        const view = new DataView(arrayBuffer);
+        if (view.getUint16(0) !== 0xFFD8) {
+            throw new Error("No es un archivo JPEG válido");
+        }
+        
+        const length = arrayBuffer.byteLength;
+        let offset = 2;
+        const segments = [];
+        
+        // Push SOI
+        segments.push(arrayBuffer.slice(0, 2));
+        
+        while (offset < length) {
+            if (view.getUint8(offset) !== 0xFF) {
+                segments.push(arrayBuffer.slice(offset));
+                break;
+            }
+            
+            const marker = view.getUint8(offset + 1);
+            if (marker === 0xD9) { // EOI
+                segments.push(arrayBuffer.slice(offset, offset + 2));
+                break;
+            }
+            if (marker === 0xDA) { // SOS - Image scan starts here
+                segments.push(arrayBuffer.slice(offset));
+                break;
+            }
+            
+            const segmentLength = view.getUint16(offset + 2) + 2; // segment size + marker (2 bytes)
+            
+            // Skip: APP1 (0xE1 = EXIF/GPS), APP2 (0xE2 = Profiles), APP13 (0xED = IPTC), COM (0xFE = Comments)
+            if (marker === 0xE1 || marker === 0xE2 || marker === 0xED || marker === 0xFE) {
+                // Skiping segment bytes
+            } else {
+                segments.push(arrayBuffer.slice(offset, offset + segmentLength));
+            }
+            offset += segmentLength;
+        }
+        
+        return new Blob(segments, { type: 'image/jpeg' });
+    }
+
+    function stripPngMetadata(arrayBuffer) {
+        const view = new DataView(arrayBuffer);
+        if (view.getUint32(0) !== 0x89504E47 || view.getUint32(4) !== 0x0D0A1A0A) {
+            throw new Error("No es un archivo PNG válido");
+        }
+        
+        const length = arrayBuffer.byteLength;
+        let offset = 8;
+        const segments = [];
+        
+        // Push PNG signature
+        segments.push(arrayBuffer.slice(0, 8));
+        
+        while (offset < length) {
+            const chunkLength = view.getUint32(offset);
+            const chunkTypeBytes = new Uint8Array(arrayBuffer, offset + 4, 4);
+            const chunkType = String.fromCharCode(...chunkTypeBytes);
+            const totalChunkLength = 4 + 4 + chunkLength + 4; // Length (4) + Type (4) + Data + CRC (4)
+            
+            // Skip non-critical tags: tEXt, zTXt, iTXt, pHYs, tIME, iCCP, gAMA, cHRM
+            const criticalChunks = ['IHDR', 'PLTE', 'IDAT', 'IEND', 'tRNS'];
+            if (criticalChunks.includes(chunkType)) {
+                segments.push(arrayBuffer.slice(offset, offset + totalChunkLength));
+            }
+            
+            offset += totalChunkLength;
+        }
+        
+        return new Blob(segments, { type: 'image/png' });
+    }
+
+    document.getElementById('btn-run-limpiar-exif').addEventListener('click', () => {
+        if (!cleanExifBuffer) return;
+
+        showLoader('Eliminando metadatos ocultos...');
+        try {
+            const type = cleanExifFile.type;
+            let resultBlob;
+            
+            if (type === 'image/jpeg' || cleanExifFile.name.toLowerCase().endsWith('.jpg') || cleanExifFile.name.toLowerCase().endsWith('.jpeg')) {
+                resultBlob = stripJpegMetadata(cleanExifBuffer);
+            } else if (type === 'image/png' || cleanExifFile.name.toLowerCase().endsWith('.png')) {
+                resultBlob = stripPngMetadata(cleanExifBuffer);
+            } else {
+                showToast('Tipo de archivo no soportado para limpieza', 'warning');
+                return;
+            }
+
+            const originalBase = cleanExifFile.name.replace(/\.[^/.]+$/, "");
+            downloadBlob(resultBlob, `${originalBase}_limpio.${cleanExifFile.name.split('.').pop()}`);
+            showToast('¡Imagen libre de metadatos descargada!', 'success');
+            resetCleanExifUI();
+        } catch (error) {
+            console.error(error);
+            showToast('Ocurrió un error al limpiar el archivo.', 'error');
+        } finally {
+            hideLoader();
+        }
+    });
+
+    // ----------------------------------------------------------------------
+    // TOOL 12e: OCR LOCAL (TESSERACT OCR) [NEW]
+    // ----------------------------------------------------------------------
+    let ocrFile = null;
+    let ocrPdfPages = null;
+
+    setupDropzone('dropzone-ocr-local', 'file-ocr-local', async (files) => {
+        const file = files[0];
+        ocrFile = file;
+        ocrPdfPages = null;
+
+        // Hide result view initially
+        document.getElementById('ocr-result-box').style.display = 'none';
+        document.getElementById('ocr-progress-container').style.display = 'none';
+        
+        document.getElementById('dropzone-ocr-local').style.display = 'none';
+        document.getElementById('preview-ocr-local').style.display = 'block';
+        document.getElementById('actions-ocr-local').style.display = 'flex';
+        
+        document.getElementById('name-ocr-local').textContent = file.name;
+        document.getElementById('size-ocr-local').textContent = formatBytes(file.size);
+        
+        const ext = file.name.split('.').pop().toLowerCase();
+        
+        if (ext === 'pdf' || file.type === 'application/pdf') {
+            showLoader('Leyendo PDF...');
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                ocrPdfPages = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                
+                // Show PDF Icon instead of thumbnail
+                const thumbWrapper = document.getElementById('thumb-wrapper-ocr');
+                thumbWrapper.innerHTML = `<i class="fa-solid fa-file-pdf" style="font-size: 2.2rem; color: #ef4444;"></i>`;
+                showToast('PDF cargado para OCR', 'success');
+            } catch (err) {
+                console.error(err);
+                showToast('Error al leer PDF.', 'error');
+            } finally {
+                hideLoader();
+            }
+        } else if (file.type.startsWith('image/')) {
+            // Display Image preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const thumbWrapper = document.getElementById('thumb-wrapper-ocr');
+                thumbWrapper.innerHTML = `<img id="thumb-ocr-local" class="img-thumbnail" src="${e.target.result}" alt="Vista previa">`;
+            };
+            reader.readAsDataURL(file);
+            showToast('Imagen cargada para OCR', 'success');
+        } else {
+            showToast('Archivo no soportado para OCR.', 'warning');
+            resetOcrUI();
+        }
+    });
+
+    function resetOcrUI() {
+        ocrFile = null;
+        ocrPdfPages = null;
+        document.getElementById('dropzone-ocr-local').style.display = 'block';
+        document.getElementById('preview-ocr-local').style.display = 'none';
+        document.getElementById('actions-ocr-local').style.display = 'none';
+        document.getElementById('ocr-result-box').style.display = 'none';
+        document.getElementById('file-ocr-local').value = '';
+    }
+
+    document.getElementById('btn-remove-ocr-local').addEventListener('click', resetOcrUI);
+
+    document.getElementById('btn-run-ocr-local').addEventListener('click', async () => {
+        if (!ocrFile) return;
+
+        const runButton = document.getElementById('btn-run-ocr-local');
+        const removeButton = document.getElementById('btn-remove-ocr-local');
+        const progressContainer = document.getElementById('ocr-progress-container');
+        const progressBar = document.getElementById('ocr-progress-bar');
+        const progressLabel = document.getElementById('ocr-progress-label');
+        const ocrResultBox = document.getElementById('ocr-result-box');
+        const ocrOutput = document.getElementById('ocr-text-output');
+        const lang = document.getElementById('ocr-lang-select').value;
+
+        runButton.disabled = true;
+        removeButton.disabled = true;
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        progressLabel.textContent = 'Iniciando motor OCR...';
+        ocrResultBox.style.display = 'none';
+
+        try {
+            let fullText = '';
+            
+            // Helper function to run Tesseract on an image source (Blob or Canvas)
+            const performOcr = async (source) => {
+                const worker = await Tesseract.createWorker({
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const pct = Math.round(m.progress * 100);
+                            progressBar.style.width = `${pct}%`;
+                            progressLabel.textContent = `Reconociendo: ${pct}%`;
+                        } else {
+                            progressLabel.textContent = m.status;
+                        }
+                    }
+                });
+                await worker.loadLanguage(lang);
+                await worker.initialize(lang);
+                const { data: { text } } = await worker.recognize(source);
+                await worker.terminate();
+                return text;
+            };
+
+            if (ocrPdfPages) {
+                const total = ocrPdfPages.numPages;
+                
+                for (let i = 1; i <= total; i++) {
+                    progressLabel.textContent = `Renderizando página ${i} de ${total}...`;
+                    const page = await ocrPdfPages.getPage(i);
+                    // Render page at high scale for OCR accuracy (DPI 150)
+                    const viewport = page.getViewport({ scale: 150 / 72 });
+                    
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+                    
+                    progressLabel.textContent = `Procesando OCR página ${i} de ${total}...`;
+                    const pageText = await performOcr(canvas);
+                    fullText += `--- Página ${i} ---\n${pageText}\n\n`;
+                }
+            } else {
+                fullText = await performOcr(ocrFile);
+            }
+
+            ocrOutput.value = fullText;
+            ocrResultBox.style.display = 'block';
+            progressContainer.style.display = 'none';
+            showToast('¡Reconocimiento de texto completado!', 'success');
+        } catch (error) {
+            console.error(error);
+            showToast('Ocurrió un error al procesar el texto.', 'error');
+            progressContainer.style.display = 'none';
+        } finally {
+            runButton.disabled = false;
+            removeButton.disabled = false;
+        }
+    });
+
+    document.getElementById('btn-copy-ocr').addEventListener('click', () => {
+        const text = document.getElementById('ocr-text-output').value;
+        navigator.clipboard.writeText(text);
+        showToast('Texto copiado al portapapeles', 'info');
+    });
+
+    document.getElementById('btn-download-ocr').addEventListener('click', () => {
+        const text = document.getElementById('ocr-text-output').value;
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const name = ocrFile.name.replace(/\.[^/.]+$/, "") + '_ocr.txt';
+        downloadBlob(blob, name);
+        showToast('Archivo de texto descargado', 'success');
+    });
+
+    // ----------------------------------------------------------------------
+    // TOOL 12f: COMPARADOR DE TEXTOS (DIFF CHECKER) [NEW]
+    // ----------------------------------------------------------------------
+    setupDiffDragAndDrop('diff-text-1', 'diff-drop-1');
+    setupDiffDragAndDrop('diff-text-2', 'diff-drop-2');
+
+    function setupDiffDragAndDrop(textareaId, overlayId) {
+        const textarea = document.getElementById(textareaId);
+        const overlay = document.getElementById(overlayId);
+
+        textarea.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            overlay.style.display = 'flex';
+        });
+
+        textarea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        overlay.addEventListener('dragleave', () => {
+            overlay.style.display = 'none';
+        });
+
+        overlay.addEventListener('drop', (e) => {
+            e.preventDefault();
+            overlay.style.display = 'none';
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    textarea.value = evt.target.result;
+                };
+                reader.readAsText(file);
+                showToast(`Cargado: ${file.name}`, 'info');
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    document.getElementById('btn-run-diff').addEventListener('click', () => {
+        const text1 = document.getElementById('diff-text-1').value;
+        const text2 = document.getElementById('diff-text-2').value;
+        const mode = document.getElementById('diff-view-mode').value;
+        const resultView = document.getElementById('diff-result-view');
+        const outputEl = document.getElementById('diff-rendered-output');
+
+        if (!text1.trim() && !text2.trim()) {
+            showToast('Por favor introduce texto en las cajas para comparar.', 'warning');
+            return;
+        }
+
+        showLoader('Calculando diferencias...');
+        try {
+            const diff = Diff.diffLines(text1, text2);
+            outputEl.innerHTML = '';
+
+            if (mode === 'split') {
+                // Side-by-Side Split View
+                let leftHtml = '';
+                let rightHtml = '';
+                let leftLineNum = 1;
+                let rightLineNum = 1;
+
+                diff.forEach(part => {
+                    const lines = part.value.split('\n');
+                    if (lines[lines.length - 1] === '') lines.pop(); // remove trailing line break split
+
+                    if (part.removed) {
+                        lines.forEach(line => {
+                            leftHtml += `<div class="diff-line diff-removed"><span class="diff-line-number">${leftLineNum++}</span><span class="diff-line-content">- ${escapeHtml(line)}</span></div>`;
+                            rightHtml += `<div class="diff-line diff-empty-line"><span class="diff-line-number"></span><span class="diff-line-content"></span></div>`;
+                        });
+                    } else if (part.added) {
+                        lines.forEach(line => {
+                            leftHtml += `<div class="diff-line diff-empty-line"><span class="diff-line-number"></span><span class="diff-line-content"></span></div>`;
+                            rightHtml += `<div class="diff-line diff-added"><span class="diff-line-number">${rightLineNum++}</span><span class="diff-line-content">+ ${escapeHtml(line)}</span></div>`;
+                        });
+                    } else {
+                        lines.forEach(line => {
+                            leftHtml += `<div class="diff-line"><span class="diff-line-number">${leftLineNum++}</span><span class="diff-line-content">  ${escapeHtml(line)}</span></div>`;
+                            rightHtml += `<div class="diff-line"><span class="diff-line-number">${rightLineNum++}</span><span class="diff-line-content">  ${escapeHtml(line)}</span></div>`;
+                        });
+                    }
+                });
+
+                outputEl.innerHTML = `
+                    <div class="diff-split-container">
+                        <div class="diff-split-column">
+                            <div style="font-weight:700; font-size:0.8rem; text-transform:uppercase; border-bottom:1px solid var(--border-color); padding-bottom:4px; margin-bottom:8px; color:var(--color-text-muted);">Texto Original</div>
+                            ${leftHtml}
+                        </div>
+                        <div class="diff-split-column">
+                            <div style="font-weight:700; font-size:0.8rem; text-transform:uppercase; border-bottom:1px solid var(--border-color); padding-bottom:4px; margin-bottom:8px; color:var(--color-text-muted);">Texto Modificado</div>
+                            ${rightHtml}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Unified single column view
+                let unifiedHtml = '';
+                let leftLineNum = 1;
+                let rightLineNum = 1;
+
+                diff.forEach(part => {
+                    const lines = part.value.split('\n');
+                    if (lines[lines.length - 1] === '') lines.pop();
+
+                    if (part.removed) {
+                        lines.forEach(line => {
+                            unifiedHtml += `<div class="diff-line diff-removed"><span class="diff-line-number">${leftLineNum++}</span><span class="diff-line-number">-</span><span class="diff-line-content">- ${escapeHtml(line)}</span></div>`;
+                        });
+                    } else if (part.added) {
+                        lines.forEach(line => {
+                            unifiedHtml += `<div class="diff-line diff-added"><span class="diff-line-number">-</span><span class="diff-line-number">${rightLineNum++}</span><span class="diff-line-content">+ ${escapeHtml(line)}</span></div>`;
+                        });
+                    } else {
+                        lines.forEach(line => {
+                            unifiedHtml += `<div class="diff-line"><span class="diff-line-number">${leftLineNum++}</span><span class="diff-line-number">${rightLineNum++}</span><span class="diff-line-content">  ${escapeHtml(line)}</span></div>`;
+                        });
+                    }
+                });
+
+                outputEl.innerHTML = `
+                    <div class="diff-unified-container">
+                        ${unifiedHtml}
+                    </div>
+                `;
+            }
+
+            resultView.style.display = 'block';
+            showToast('Diferencias calculadas con éxito', 'success');
+        } catch (error) {
+            console.error(error);
+            showToast('Error al comparar los textos.', 'error');
+        } finally {
             hideLoader();
         }
     });
