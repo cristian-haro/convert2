@@ -1,0 +1,197 @@
+/* ----------------------------------------------------------------------
+   NEW COMPONENT STYLES
+   ---------------------------------------------------------------------- */
+
+/* Quality Compressor Slider */
+.slider-layout {
+    grid-template-columns: 1fr;
+    margin-top: 0.5rem;
+}
+
+.slider-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.input-slider {
+    flex-grow: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    cursor: pointer;
+}
+
+.input-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    box-shadow: 0 0 10px var(--accent-glow);
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.input-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.slider-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    min-width: 48px;
+    text-align: right;
+}
+
+/* Crop & Resize Editor layout */
+.resize-crop-editor-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.editor-option-card {
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.editor-option-card h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 6px;
+    color: #fff;
+}
+
+.inline-editor-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.inline-editor-inputs-4 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+}
+
+.checkbox-wrapper input[type="checkbox"] {
+    cursor: pointer;
+    accent-color: var(--accent-color);
+    width: 14px;
+    height: 14px;
+}
+
+/* Progress Bar for Local AI Models */
+.progress-container-local {
+    margin-top: 1.5rem;
+}
+
+.progress-bar-label-local {
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--color-text);
+    display: flex;
+    justify-content: space-between;
+}
+
+.progress-bar-track-local {
+    background-color: var(--border-color, rgba(255, 255, 255, 0.08));
+    border-radius: 9999px;
+    height: 10px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    border: 1px solid var(--border-color, rgba(255, 255, 255, 0.08));
+}
+
+.progress-bar-fill-local {
+    background: var(--accent-gradient, linear-gradient(135deg, #a78bfa, #8b5cf6, #6d28d9));
+    width: 0%;
+    height: 100%;
+    transition: width 0.1s ease;
+    box-shadow: 0 0 10px var(--accent-glow, rgba(139, 92, 246, 0.3));
+}
+
+/* Comparison Layout for Background Removal */
+.result-comparison-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+}
+
+.comparison-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.comparison-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.comparison-img-wrapper {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.comparison-img-wrapper img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Transparency checkerboard grid */
+.transparency-grid {
+    background-color: #1a1a2e;
+    background-image: 
+        linear-gradient(45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%), 
+        linear-gradient(-45deg, rgba(255, 255, 255, 0.03) 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.03) 75%), 
+        linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.03) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+
+@media (max-width: 640px) {
+    .result-comparison-layout {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
