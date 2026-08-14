@@ -28,7 +28,8 @@ const toolCategories = {
     'ocr-local': 'text',
     'comparar-textos': 'text',
     
-    'privacidad': 'layout'
+    'privacidad': 'layout',
+    'inicio': 'layout'
 };
 
 const loadedTools = new Set();

@@ -1,0 +1,134 @@
+/* ==========================================================================
+   Convert2 by Cristian Haro - Home Dashboard Mosaic Styles
+   ========================================================================== */
+
+.inicio-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+}
+
+.inicio-hero {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.inicio-hero h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.25;
+    background: linear-gradient(135deg, #a5b4fc, #6366f1, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 50px rgba(99, 102, 241, 0.15);
+}
+
+.inicio-hero p {
+    font-size: 1.2rem;
+    color: var(--color-text-muted);
+    max-width: 750px;
+    line-height: 1.6;
+}
+
+.inicio-category-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.inicio-category-title {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--color-text);
+    border-left: 4px solid var(--accent-color);
+    padding-left: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.inicio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.mosaic-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.75rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.mosaic-card i {
+    font-size: 2.2rem;
+    color: var(--accent-color);
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+}
+
+.mosaic-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.mosaic-card h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin: 0;
+    transition: color 0.2s ease;
+}
+
+.mosaic-card p {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Hover effects */
+.mosaic-card:hover {
+    background: rgba(99, 102, 241, 0.06);
+    border-color: var(--accent-color);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px -5px rgba(99, 102, 241, 0.22);
+}
+
+.mosaic-card:hover i {
+    transform: scale(1.1) rotate(3deg);
+}
+
+.mosaic-card:hover h3 {
+    color: #a5b4fc;
+}
+
+/* Responsiveness adjustments */
+@media (max-width: 768px) {
+    .inicio-hero h1 {
+        font-size: 2.25rem;
+    }
+    .inicio-hero p {
+        font-size: 1rem;
+    }
+    .inicio-container {
+        padding: 1.5rem 1rem 3rem;
+        gap: 2.5rem;
+    }
+}
