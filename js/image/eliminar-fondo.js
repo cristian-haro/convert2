@@ -1,3 +1,82 @@
+export const html = `
+<section class="tab-panel" id="panel-eliminar-fondo">
+                <div class="panel-header">
+                    <h2>Eliminar Fondo de Imagen</h2>
+                    <p>Remueve el fondo de tus imágenes de forma automática y 100% local usando inteligencia artificial
+                        en tu navegador.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-eliminar-fondo">
+                    <input type="file" id="file-eliminar-fondo" accept="image/*" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-wand-magic-sparkles dropzone-icon"></i>
+                        <h3>Selecciona la imagen de origen</h3>
+                        <p>Soporta PNG, JPG, JPEG, WEBP, BMP</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-eliminar-fondo" style="display: none;">
+                    <div class="file-meta">
+                        <div class="thumbnail-wrapper">
+                            <img id="thumb-eliminar-fondo" class="img-thumbnail" src="" alt="Vista previa">
+                        </div>
+                        <div class="file-details">
+                            <span class="file-name" id="name-eliminar-fondo">imagen.png</span>
+                            <span class="file-size" id="size-eliminar-fondo">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-eliminar-fondo"><i
+                                class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options">
+                        <h3>Opciones de Procesamiento</h3>
+                        <p class="info-text"><i class="fa-solid fa-circle-info"></i> El primer procesamiento descargará
+                            un modelo de IA de aproximadamente 80 MB de forma local. Las siguientes ejecuciones serán
+                            instantáneas.</p>
+
+                        <div class="progress-container-local" id="progress-container-eliminar-fondo"
+                            style="display: none;">
+                            <div class="progress-bar-label-local" id="progress-label-eliminar-fondo">
+                                <span>Descargando modelo de IA...</span>
+                                <span id="progress-percentage-eliminar-fondo">0%</span>
+                            </div>
+                            <div class="progress-bar-track-local">
+                                <div class="progress-bar-fill-local" id="progress-bar-eliminar-fondo"></div>
+                            </div>
+                        </div>
+
+                        <!-- Comparativa de resultados -->
+                        <div class="result-comparison-layout" id="result-comparison-eliminar-fondo"
+                            style="display: none;">
+                            <div class="comparison-box">
+                                <span class="comparison-label">Original</span>
+                                <div class="comparison-img-wrapper">
+                                    <img id="img-orig-eliminar-fondo" src="" alt="Original">
+                                </div>
+                            </div>
+                            <div class="comparison-box">
+                                <span class="comparison-label">Sin Fondo</span>
+                                <div class="comparison-img-wrapper transparency-grid">
+                                    <img id="img-res-eliminar-fondo" src="" alt="Resultado sin fondo">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-eliminar-fondo" style="display: none; gap: 10px;">
+                    <button class="btn btn-secondary" id="btn-reset-eliminar-fondo" style="display: none;">
+                        <i class="fa-solid fa-arrow-rotate-left"></i> Procesar otra
+                    </button>
+                    <button class="btn btn-primary" id="btn-run-eliminar-fondo">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Eliminar Fondo y Descargar
+                    </button>
+                </div>
+            </section>
+
+            <!-- 12. Extraer Texto Panel [EXPANDED] -->
+`;
+
 import { removeBackground } from 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.7.0/+esm';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone } from '../helpers.js';
 

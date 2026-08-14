@@ -1,6 +1,65 @@
+export const html = `
+<section class="tab-panel" id="panel-separar-pdf">
+                <div class="panel-header">
+                    <h2>Separar PDF</h2>
+                    <p>Extrae un rango específico de páginas de un documento PDF para crear un nuevo archivo.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-separar">
+                    <input type="file" id="file-separar" accept=".pdf" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-file-pdf dropzone-icon"></i>
+                        <h3>Selecciona tu archivo PDF</h3>
+                        <p>Arrastra el archivo o haz clic para buscar</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-separar" style="display: none;">
+                    <div class="file-meta">
+                        <i class="fa-solid fa-file-pdf file-type-icon"></i>
+                        <div class="file-details">
+                            <span class="file-name" id="name-separar">documento.pdf</span>
+                            <span class="file-size" id="size-separar">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-separar"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options">
+                        <h3>Rango de Páginas a Extraer</h3>
+                        <div class="range-inputs">
+                            <div class="input-group">
+                                <label for="page-start">Desde página:</label>
+                                <input type="number" id="page-start" min="1" value="1">
+                            </div>
+                            <div class="input-group">
+                                <label for="page-end">Hasta página:</label>
+                                <input type="number" id="page-end" min="1" value="1">
+                            </div>
+                        </div>
+                        <p class="info-text"><i class="fa-solid fa-circle-info"></i> El PDF tiene un total de <strong
+                                id="total-pages-separar">0</strong> páginas.</p>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-separar" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-separar">
+                        <i class="fa-solid fa-scissors"></i> Extraer y Descargar PDF
+                    </button>
+                </div>
+            </section>
+
+            <!-- 3. Rotar PDF Panel -->
+`;
+
+import { loadScript } from '../helpers.js';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone, getEmbeddableImageBytes } from '../helpers.js';
 
-export function init() {
+export async function init() {
+    await Promise.all([
+        loadScript('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'),
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js')
+    ]);
+
     // TOOL 2: SEPARAR PDF (SPLIT PDF)
     // ----------------------------------------------------------------------
     let splitFile = null;

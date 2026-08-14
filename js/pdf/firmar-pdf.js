@@ -1,6 +1,91 @@
+export const html = `
+<section class="tab-panel" id="panel-firmar-pdf">
+                <div class="panel-header">
+                    <h2>Firmar PDF</h2>
+                    <p>Dibuja tu firma digital y colócala de manera interactiva sobre las páginas de tu archivo PDF.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-firmar">
+                    <input type="file" id="file-firmar" accept=".pdf" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-signature dropzone-icon"></i>
+                        <h3>Carga el PDF que deseas firmar</h3>
+                        <p>Arrastra el archivo o haz clic para buscar</p>
+                    </div>
+                </div>
+
+                <div class="signature-work-area" id="work-area-firmar" style="display: none;">
+                    <div class="signature-editor-grid">
+                        <!-- Left Panel: Drawing Signature -->
+                        <div class="signature-box-card">
+                            <h3>1. Dibuja tu Firma</h3>
+                            <div class="canvas-sig-container">
+                                <canvas id="canvas-signature-pad" width="300" height="150"></canvas>
+                            </div>
+                            <div class="sig-buttons">
+                                <button class="btn btn-secondary-icon" id="btn-clear-sig"><i
+                                        class="fa-solid fa-eraser"></i> Limpiar</button>
+                                <button class="btn btn-primary-icon" id="btn-save-sig"><i
+                                        class="fa-solid fa-circle-check"></i> Usar Firma</button>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Place signature on PDF -->
+                        <div class="pdf-viewer-card">
+                            <h3>2. Posiciona la Firma en el PDF</h3>
+                            <div class="pdf-page-navigator">
+                                <button class="btn-icon" id="btn-prev-page-sig"><i
+                                        class="fa-solid fa-chevron-left"></i></button>
+                                <span>Página <strong id="current-page-sig">1</strong> de <strong
+                                        id="total-pages-sig">1</strong></span>
+                                <button class="btn-icon" id="btn-next-page-sig"><i
+                                        class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+
+                            <div class="pdf-canvas-container">
+                                <div class="canvas-relative-wrapper">
+                                    <canvas id="canvas-pdf-preview"></canvas>
+                                    <div class="signature-stamp-preview" id="sig-stamp-preview" style="display: none;">
+                                        <i class="fa-solid fa-signature"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="instruction-stamp-text"><i class="fa-solid fa-hand-pointer"></i> Haz clic en la
+                                posición exacta del PDF donde quieres estampar tu firma.</p>
+                        </div>
+                    </div>
+
+                    <div class="tool-options sig-options-meta">
+                        <h3>Configuración del Sello</h3>
+                        <div class="range-inputs">
+                            <div class="input-group">
+                                <label for="sig-scale">Tamaño de la Firma (%):</label>
+                                <input type="number" id="sig-scale" min="10" max="200" value="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="actions-panel">
+                        <button class="btn btn-secondary" id="btn-cancel-firmar">Cancelar</button>
+                        <button class="btn btn-primary" id="btn-run-firmar">
+                            <i class="fa-solid fa-file-signature"></i> Aplicar Firma y Descargar
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. Proteger PDF Panel [NEW] -->
+`;
+
+import { loadScript } from '../helpers.js';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone, getEmbeddableImageBytes } from '../helpers.js';
 
-export function init() {
+export async function init() {
+    await Promise.all([
+        loadScript('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'),
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js')
+    ]);
+
     // TOOL 6: FIRMAR PDF (SIGN PDF) [NEW]
     // ----------------------------------------------------------------------
     let signaturePdfFile = null;

@@ -112,3 +112,30 @@ export function setupDropzone(dropzoneId, inputId, onFileSelect) {
         }
     });
 }
+
+const loadedScripts = new Set();
+
+export function loadScript(url) {
+    if (loadedScripts.has(url)) return Promise.resolve();
+    
+    const existing = document.querySelector(`script[src="${url}"]`);
+    if (existing) {
+        loadedScripts.add(url);
+        return Promise.resolve();
+    }
+    
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.onload = () => {
+            loadedScripts.add(url);
+            // Auto configure PDF.js worker
+            if (url.includes('pdf.min.js') && window.pdfjsLib) {
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+            }
+            resolve();
+        };
+        script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+        document.head.appendChild(script);
+    });
+}

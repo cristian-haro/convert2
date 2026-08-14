@@ -1,3 +1,60 @@
+export const html = `
+<section class="tab-panel" id="panel-compresor-img">
+                <div class="panel-header">
+                    <h2>Comprimir Imagen</h2>
+                    <p>Reduce el tamaño de almacenamiento de tus imágenes (JPG/WEBP) ajustando su nivel de calidad.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-compresor">
+                    <input type="file" id="file-compresor" accept="image/jpeg, image/png, image/webp"
+                        class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-minimize dropzone-icon"></i>
+                        <h3>Selecciona tu imagen</h3>
+                        <p>Soporta JPG, JPEG, PNG y WEBP</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-compresor" style="display: none;">
+                    <div class="file-meta">
+                        <div class="thumbnail-wrapper">
+                            <img id="thumb-compresor" class="img-thumbnail" src="" alt="Vista previa">
+                        </div>
+                        <div class="file-details">
+                            <span class="file-name" id="name-compresor">imagen.jpg</span>
+                            <span class="file-size" id="size-compresor">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-compresor"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options">
+                        <h3>Nivel de Calidad</h3>
+                        <div class="range-inputs slider-layout">
+                            <div class="slider-wrapper">
+                                <input type="range" id="compress-quality" min="10" max="100" value="80"
+                                    class="input-slider">
+                                <span class="slider-value" id="quality-value-display">80%</span>
+                            </div>
+                        </div>
+                        <div class="compress-meta-info">
+                            <p class="info-text"><i class="fa-solid fa-chart-simple"></i> Tamaño original: <span
+                                    id="original-size-display">0 KB</span></p>
+                            <p class="info-text text-accent-highlight"><i class="fa-solid fa-circle-down"></i> Tamaño
+                                estimado comprimido: <span id="estimate-size-display">0 KB</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-compresor" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-compresor">
+                        <i class="fa-solid fa-minimize"></i> Comprimir y Descargar
+                    </button>
+                </div>
+            </section>
+
+            <!-- 10. Recortar y Redimensionar Panel [NEW] -->
+`;
+
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone } from '../helpers.js';
 
 export function init() {

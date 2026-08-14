@@ -1,6 +1,56 @@
+export const html = `
+<section class="tab-panel" id="panel-pdf-docx">
+                <div class="panel-header">
+                    <h2>Convertir PDF a Word</h2>
+                    <p>Extrae el texto de tu PDF y genera un archivo Word editable (.docx) de forma totalmente privada.
+                    </p>
+                </div>
+
+                <div class="dropzone" id="dropzone-pdf-docx">
+                    <input type="file" id="file-pdf-docx" accept=".pdf" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-file-word dropzone-icon"></i>
+                        <h3>Selecciona tu archivo PDF</h3>
+                        <p>Arrastra el archivo o haz clic para buscar</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-pdf-docx" style="display: none;">
+                    <div class="file-meta">
+                        <i class="fa-solid fa-file-pdf file-type-icon"></i>
+                        <div class="file-details">
+                            <span class="file-name" id="name-pdf-docx">documento.pdf</span>
+                            <span class="file-size" id="size-pdf-docx">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-pdf-docx"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options text-extraction-options">
+                        <p class="info-warning"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Nota:</strong>
+                            Esta herramienta extrae el texto del PDF y crea párrafos editables en formato de documento
+                            Word. No conserva imágenes ni tablas complejas.</p>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-pdf-docx" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-pdf-docx">
+                        <i class="fa-solid fa-file-word"></i> Convertir y Descargar Word (.docx)
+                    </button>
+                </div>
+            </section>
+
+            <!-- 12b. Organizar PDF Panel [NEW] -->
+`;
+
+import { loadScript } from '../helpers.js';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone, getEmbeddableImageBytes } from '../helpers.js';
 
-export function init() {
+export async function init() {
+    await Promise.all([
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js'),
+        loadScript('https://cdn.jsdelivr.net/npm/docx@8.2.0/build/index.umd.js')
+    ]);
+
     // TOOL 14: PDF A WORD (PDF TO DOCX) [NEW]
     // ----------------------------------------------------------------------
     let pdfDocxFile = null;

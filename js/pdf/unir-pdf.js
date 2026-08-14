@@ -1,6 +1,43 @@
+export const html = `
+<section class="tab-panel" id="panel-unir-pdf">
+                <div class="panel-header">
+                    <h2>Unir Archivos PDF</h2>
+                    <p>Combina múltiples documentos PDF en un solo archivo en el orden que decidas.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-unir">
+                    <input type="file" id="file-unir" multiple accept=".pdf" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                        <h3>Arrastra tus PDFs aquí</h3>
+                        <p>o haz clic para buscar en tu dispositivo</p>
+                    </div>
+                </div>
+
+                <div class="files-list-container" id="list-container-unir" style="display: none;">
+                    <h3>Archivos seleccionados (<span id="count-unir">0</span>)</h3>
+                    <ul class="files-list" id="files-list-unir"></ul>
+                </div>
+
+                <div class="actions-panel" id="actions-unir" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-unir">
+                        <i class="fa-solid fa-file-pdf"></i> Unir y Descargar PDF
+                    </button>
+                </div>
+            </section>
+
+            <!-- 2. Separar PDF Panel -->
+`;
+
+import { loadScript } from '../helpers.js';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone, getEmbeddableImageBytes } from '../helpers.js';
 
-export function init() {
+export async function init() {
+    await Promise.all([
+        loadScript('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'),
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js')
+    ]);
+
     // TOOL 1: UNIR PDF (MERGE PDF)
     // ----------------------------------------------------------------------
     let mergeFilesList = [];

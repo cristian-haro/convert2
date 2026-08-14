@@ -1,3 +1,60 @@
+export const html = `
+<section class="tab-panel" id="panel-convertir-img">
+                <div class="panel-header">
+                    <h2>Convertir Formato de Imagen</h2>
+                    <p>Convierte tus fotos e imágenes a otros formatos como PNG, JPG, WEBP, GIF, BMP, y crea **iconos
+                        (.ICO)**.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-convertir">
+                    <input type="file" id="file-convertir" accept="image/*" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-image-portrait dropzone-icon"></i>
+                        <h3>Selecciona la imagen de origen</h3>
+                        <p>Soporta PNG, JPG, JPEG, GIF, BMP, WEBP</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-convertir" style="display: none;">
+                    <div class="file-meta">
+                        <div class="thumbnail-wrapper">
+                            <img id="thumb-convertir" class="img-thumbnail" src="" alt="Vista previa">
+                        </div>
+                        <div class="file-details">
+                            <span class="file-name" id="name-convertir">imagen.png</span>
+                            <span class="file-size" id="size-convertir">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-convertir"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options">
+                        <h3>Configuración del Formato Destino</h3>
+                        <div class="format-selection">
+                            <label class="select-label" for="format-select">Formato:</label>
+                            <div class="select-wrapper">
+                                <select id="format-select">
+                                    <option value="png">PNG (Transparencia)</option>
+                                    <option value="jpeg">JPEG (Comprimido)</option>
+                                    <option value="webp">WEBP (Optimizado web)</option>
+                                    <option value="ico">ICO (Icono de Windows)</option>
+                                    <option value="gif">GIF</option>
+                                    <option value="bmp">BMP</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-convertir" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-convertir">
+                        <i class="fa-solid fa-file-export"></i> Convertir y Descargar
+                    </button>
+                </div>
+            </section>
+
+            <!-- 9. Comprimir Imagen Panel [NEW] -->
+`;
+
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone } from '../helpers.js';
 
 export function init() {

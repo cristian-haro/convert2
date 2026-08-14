@@ -1,6 +1,94 @@
+export const html = `
+<section class="tab-panel" id="panel-ocr-local">
+                <div class="panel-header">
+                    <h2>OCR Local - Reconocimiento de Texto</h2>
+                    <p>Extrae texto editable de imágenes u hojas de documentos PDF escaneados de forma 100% local en tu
+                        navegador.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-ocr-local">
+                    <input type="file" id="file-ocr-local" accept="image/*, .pdf" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-eye dropzone-icon"></i>
+                        <h3>Selecciona tu imagen o PDF</h3>
+                        <p>Arrastra el archivo o haz clic para buscar</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-ocr-local" style="display: none;">
+                    <div class="file-meta">
+                        <div class="thumbnail-wrapper" id="thumb-wrapper-ocr">
+                            <img id="thumb-ocr-local" class="img-thumbnail" src="" alt="Vista previa">
+                        </div>
+                        <div class="file-details">
+                            <span class="file-name" id="name-ocr-local">documento.png</span>
+                            <span class="file-size" id="size-ocr-local">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-ocr-local"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options">
+                        <h3>Configuración del OCR</h3>
+                        <div class="option-grid-2col"
+                            style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; align-items: end;">
+                            <div class="input-group">
+                                <label for="ocr-lang-select">Idioma del documento:</label>
+                                <div class="select-wrapper">
+                                    <select id="ocr-lang-select">
+                                        <option value="spa" selected>Español</option>
+                                        <option value="eng">Inglés (English)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="input-group" id="ocr-progress-container" style="display: none;">
+                                <div class="progress-bar-label-local" id="ocr-progress-label">Procesando OCR: 0%</div>
+                                <div class="progress-bar-track-local"
+                                    style="margin-top: 0.5rem; background: rgba(255,255,255,0.08); border-radius: 9999px; height: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08);">
+                                    <div class="progress-bar-fill-local" id="ocr-progress-bar"
+                                        style="width: 0%; height: 100%; background: var(--accent-gradient); transition: width 0.1s ease;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Extracted text area -->
+                        <div class="ocr-text-result" id="ocr-result-box"
+                            style="display: none; margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+                            <label for="ocr-text-output" style="font-weight: 600; font-size: 0.95rem;">Texto
+                                Extraído:</label>
+                            <textarea id="ocr-text-output" rows="10"
+                                style="width: 100%; font-family: inherit; font-size: 0.9rem; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); background: rgba(0,0,0,0.25); color: var(--color-text); margin-top: 0.5rem; resize: vertical; outline: none;"></textarea>
+                            <div style="display: flex; gap: 10px; margin-top: 0.75rem;">
+                                <button class="btn btn-secondary" id="btn-copy-ocr"
+                                    style="padding: 0.5rem 1rem; font-size: 0.85rem;"><i class="fa-solid fa-copy"></i>
+                                    Copiar Texto</button>
+                                <button class="btn btn-secondary" id="btn-download-ocr"
+                                    style="padding: 0.5rem 1rem; font-size: 0.85rem;"><i
+                                        class="fa-solid fa-download"></i> Descargar (.txt)</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-ocr-local" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-ocr-local">
+                        <i class="fa-solid fa-play"></i> Ejecutar Reconocimiento de Texto
+                    </button>
+                </div>
+            </section>
+
+            <!-- 12f. Comparar Textos Panel [NEW] -->
+`;
+
+import { loadScript } from '../helpers.js';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone } from '../helpers.js';
 
-export function init() {
+export async function init() {
+    await Promise.all([
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/4.1.1/tesseract.min.js'),
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js')
+    ]);
+
     // TOOL 12e: OCR LOCAL (TESSERACT OCR) [NEW]
     // ----------------------------------------------------------------------
     let ocrFile = null;

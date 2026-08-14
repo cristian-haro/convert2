@@ -1,6 +1,40 @@
+export const html = `
+<section class="tab-panel" id="panel-imagenes-pdf">
+                <div class="panel-header">
+                    <h2>Imágenes a PDF</h2>
+                    <p>Une múltiples fotos e imágenes y conviértelas en un único documento PDF ordenado.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-img-to-pdf">
+                    <input type="file" id="file-img-to-pdf" multiple accept="image/*" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-images dropzone-icon"></i>
+                        <h3>Arrastra tus imágenes aquí</h3>
+                        <p>Soporta PNG, JPG, JPEG, BMP, WEBP</p>
+                    </div>
+                </div>
+
+                <div class="files-list-container" id="list-container-img-to-pdf" style="display: none;">
+                    <h3>Imágenes seleccionadas (<span id="count-img-to-pdf">0</span>)</h3>
+                    <ul class="files-list" id="files-list-img-to-pdf"></ul>
+                </div>
+
+                <div class="actions-panel" id="actions-img-to-pdf" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-img-to-pdf">
+                        <i class="fa-solid fa-file-pdf"></i> Generar y Descargar PDF
+                    </button>
+                </div>
+            </section>
+
+            <!-- 5. PDF a Imágenes Panel [NEW] -->
+`;
+
+import { loadScript } from '../helpers.js';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone, getEmbeddableImageBytes } from '../helpers.js';
 
-export function init() {
+export async function init() {
+    await loadScript('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js');
+
     // TOOL 4: IMÁGENES A PDF (IMAGES TO PDF) [NEW]
     // ----------------------------------------------------------------------
     let imgToPdfList = [];

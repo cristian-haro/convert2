@@ -1,7 +1,78 @@
+export const html = `
+<section class="tab-panel" id="panel-proteger-pdf">
+                <div class="panel-header">
+                    <h2>Proteger / Desproteger PDF</h2>
+                    <p>Añade una contraseña de apertura a tu PDF para restringir el acceso o elimínala si ya no la
+                        necesitas.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-proteger">
+                    <input type="file" id="file-proteger" accept=".pdf" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-lock dropzone-icon"></i>
+                        <h3>Selecciona tu archivo PDF</h3>
+                        <p>Arrastra el archivo o haz clic para buscar</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-proteger" style="display: none;">
+                    <div class="file-meta">
+                        <i class="fa-solid fa-file-pdf file-type-icon"></i>
+                        <div class="file-details">
+                            <span class="file-name" id="name-proteger">documento.pdf</span>
+                            <span class="file-size" id="size-proteger">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-proteger"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options">
+                        <h3>Acción de Seguridad</h3>
+                        <div class="security-modes">
+                            <label class="choice-card">
+                                <input type="radio" name="sec-mode" value="encrypt" checked>
+                                <span class="choice-box">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                    <strong>Proteger PDF</strong>
+                                    <span>Añadir Contraseña</span>
+                                </span>
+                            </label>
+                            <label class="choice-card">
+                                <input type="radio" name="sec-mode" value="decrypt">
+                                <span class="choice-box">
+                                    <i class="fa-solid fa-unlock-keyhole"></i>
+                                    <strong>Desproteger PDF</strong>
+                                    <span>Eliminar Contraseña</span>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div class="security-inputs-wrapper">
+                            <div class="input-group" id="group-sec-password">
+                                <label for="sec-password" id="label-sec-password">Contraseña de Apertura:</label>
+                                <input type="password" id="sec-password" placeholder="Ingresa la contraseña..."
+                                    class="text-input-field">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-proteger" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-proteger">
+                        <i class="fa-solid fa-shield-check"></i> Aplicar Seguridad y Descargar
+                    </button>
+                </div>
+            </section>
+
+            <!-- 8. Convertir Imagen Panel -->
+`;
+
+import { loadScript } from '../helpers.js';
 import { encryptPDF } from 'https://cdn.jsdelivr.net/npm/@pdfsmaller/pdf-encrypt-lite/+esm';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone, getEmbeddableImageBytes } from '../helpers.js';
 
-export function init() {
+export async function init() {
+    await loadScript('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js');
+
     // TOOL 7: PROTEGER / DESPROTEGER PDF [NEW]
     // ----------------------------------------------------------------------
     let protectPdfFile = null;

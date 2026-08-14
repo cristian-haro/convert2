@@ -1,3 +1,58 @@
+export const html = `
+<section class="tab-panel" id="panel-limpiar-exif">
+                <div class="panel-header">
+                    <h2>Limpiar Metadatos EXIF (Privacidad)</h2>
+                    <p>Elimina la información oculta, ubicación GPS y datos de cámara de tus fotos para proteger tu
+                        privacidad.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-limpiar-exif">
+                    <input type="file" id="file-limpiar-exif" accept="image/jpeg, image/png" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-user-secret dropzone-icon"></i>
+                        <h3>Selecciona tu imagen</h3>
+                        <p>Soporta JPEG, JPG y PNG</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-limpiar-exif" style="display: none;">
+                    <div class="file-meta">
+                        <div class="thumbnail-wrapper">
+                            <img id="thumb-limpiar-exif" class="img-thumbnail" src="" alt="Vista previa">
+                        </div>
+                        <div class="file-details">
+                            <span class="file-name" id="name-limpiar-exif">imagen.jpg</span>
+                            <span class="file-size" id="size-limpiar-exif">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-limpiar-exif"><i
+                                class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options">
+                        <h3>Análisis de Privacidad</h3>
+                        <div class="metadata-analysis-box"
+                            style="background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1rem; max-height: 200px; overflow-y: auto;">
+                            <ul class="metadata-list" id="meta-list-limpiar-exif"
+                                style="list-style: none; display: flex; flex-direction: column; gap: 6px; font-size: 0.88rem;">
+                                <li>Analizando archivo...</li>
+                            </ul>
+                        </div>
+                        <p class="info-text" style="margin-top: 1rem;"><i class="fa-solid fa-circle-info"></i> Al
+                            limpiar se eliminarán EXIF, XMP, IPTC y comentarios del archivo de forma binaria sin alterar
+                            la calidad visual de la imagen.</p>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-limpiar-exif" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-limpiar-exif">
+                        <i class="fa-solid fa-shield-halved"></i> Limpiar Metadatos y Descargar
+                    </button>
+                </div>
+            </section>
+
+            <!-- 12e. OCR Local Panel [NEW] -->
+`;
+
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone } from '../helpers.js';
 
 export function init() {

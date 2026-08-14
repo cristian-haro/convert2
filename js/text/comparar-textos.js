@@ -1,6 +1,71 @@
+export const html = `
+<section class="tab-panel" id="panel-comparar-textos">
+                <div class="panel-header">
+                    <h2>Comparador Visual de Textos (Diff Checker)</h2>
+                    <p>Compara dos textos o archivos planos y resalta las diferencias (añadido/eliminado) de forma
+                        visual.</p>
+                </div>
+
+                <div class="diff-checker-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="diff-input-pane" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="diff-text-box"
+                            style="position: relative; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <label for="diff-text-1" style="font-weight: 500;">Texto Original (A)</label>
+                            <textarea id="diff-text-1" placeholder="Escribe o arrastra un archivo .txt aquí..."
+                                rows="12"
+                                style="width: 100%; font-family: inherit; font-size: 0.9rem; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); background: rgba(0,0,0,0.15); color: var(--color-text); resize: vertical; outline: none;"></textarea>
+                            <div class="diff-drop-overlay" id="diff-drop-1"
+                                style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(139, 92, 246, 0.8); border: 2px dashed #fff; border-radius: var(--border-radius-md); align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 1.1rem; pointer-events: none; z-index: 10;">
+                                Arrastra tu archivo aquí</div>
+                        </div>
+                        <div class="diff-text-box"
+                            style="position: relative; display: flex; flex-direction: column; gap: 0.5rem;">
+                            <label for="diff-text-2" style="font-weight: 500;">Texto Modificado (B)</label>
+                            <textarea id="diff-text-2" placeholder="Escribe o arrastra un archivo .txt aquí..."
+                                rows="12"
+                                style="width: 100%; font-family: inherit; font-size: 0.9rem; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); background: rgba(0,0,0,0.15); color: var(--color-text); resize: vertical; outline: none;"></textarea>
+                            <div class="diff-drop-overlay" id="diff-drop-2"
+                                style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(139, 92, 246, 0.8); border: 2px dashed #fff; border-radius: var(--border-radius-md); align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 1.1rem; pointer-events: none; z-index: 10;">
+                                Arrastra tu archivo aquí</div>
+                        </div>
+                    </div>
+
+                    <div class="diff-controls-bar"
+                        style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1rem; flex-wrap: wrap; gap: 1rem;">
+                        <div class="input-group inline-layout" style="display: flex; align-items: center; gap: 10px;">
+                            <label for="diff-view-mode">Modo de vista:</label>
+                            <div class="select-wrapper">
+                                <select id="diff-view-mode">
+                                    <option value="split" selected>Lado a Lado (Split)</option>
+                                    <option value="unified">Unificado (Unified)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="btn-run-diff">
+                            <i class="fa-solid fa-columns"></i> Comparar Textos
+                        </button>
+                    </div>
+
+                    <!-- Diff Result Render Area -->
+                    <div class="diff-results-wrapper" id="diff-result-view"
+                        style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-lg); padding: 1.5rem;">
+                        <h3
+                            style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                            Resultado de la Comparación</h3>
+                        <div class="diff-rendered-content" id="diff-rendered-output"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 15. Privacidad Panel [NEW] -->
+`;
+
+import { loadScript } from '../helpers.js';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone } from '../helpers.js';
 
-export function init() {
+export async function init() {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js');
+
     // TOOL 12f: COMPARADOR DE TEXTOS (DIFF CHECKER) [NEW]
     // ----------------------------------------------------------------------
     setupDiffDragAndDrop('diff-text-1', 'diff-drop-1');

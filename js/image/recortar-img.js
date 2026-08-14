@@ -1,3 +1,89 @@
+export const html = `
+<section class="tab-panel" id="panel-recortar-img">
+                <div class="panel-header">
+                    <h2>Recortar y Redimensionar Imagen</h2>
+                    <p>Modifica el tamaño en píxeles y recorta los bordes de tus imágenes de forma rápida.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-recortar">
+                    <input type="file" id="file-recortar" accept="image/*" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-crop-simple dropzone-icon"></i>
+                        <h3>Selecciona tu imagen</h3>
+                        <p>Arrastra el archivo o haz clic para buscar</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-recortar" style="display: none;">
+                    <div class="file-meta">
+                        <div class="thumbnail-wrapper">
+                            <img id="thumb-recortar" class="img-thumbnail" src="" alt="Vista previa">
+                        </div>
+                        <div class="file-details">
+                            <span class="file-name" id="name-recortar">imagen.png</span>
+                            <span class="file-size" id="size-recortar">0 KB</span>
+                            <span class="file-resolution-text" id="res-recortar">0 x 0 píxeles</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-recortar"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="resize-crop-editor-layout">
+                        <!-- Option 1: Resize -->
+                        <div class="editor-option-card">
+                            <h3><i class="fa-solid fa-up-right-and-down-left-from-center"></i> Redimensionar</h3>
+                            <div class="range-inputs inline-editor-inputs">
+                                <div class="input-group">
+                                    <label for="resize-width">Ancho (px):</label>
+                                    <input type="number" id="resize-width" min="1">
+                                </div>
+                                <div class="input-group">
+                                    <label for="resize-height">Alto (px):</label>
+                                    <input type="number" id="resize-height" min="1">
+                                </div>
+                            </div>
+                            <label class="checkbox-wrapper">
+                                <input type="checkbox" id="maintain-aspect" checked>
+                                <span>Mantener relación de aspecto</span>
+                            </label>
+                        </div>
+
+                        <!-- Option 2: Crop -->
+                        <div class="editor-option-card">
+                            <h3><i class="fa-solid fa-crop"></i> Recortar Bordes</h3>
+                            <div class="range-inputs inline-editor-inputs-4">
+                                <div class="input-group">
+                                    <label for="crop-x">X de Inicio:</label>
+                                    <input type="number" id="crop-x" min="0" value="0">
+                                </div>
+                                <div class="input-group">
+                                    <label for="crop-y">Y de Inicio:</label>
+                                    <input type="number" id="crop-y" min="0" value="0">
+                                </div>
+                                <div class="input-group">
+                                    <label for="crop-width">Ancho Recorte:</label>
+                                    <input type="number" id="crop-width" min="1">
+                                </div>
+                                <div class="input-group">
+                                    <label for="crop-height">Alto Recorte:</label>
+                                    <input type="number" id="crop-height" min="1">
+                                </div>
+                            </div>
+                            <button class="btn btn-secondary-icon" id="btn-full-crop"><i
+                                    class="fa-solid fa-arrows-to-eye"></i> Reiniciar al área total</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-recortar" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-recortar">
+                        <i class="fa-solid fa-crop-simple"></i> Procesar y Descargar Imagen
+                    </button>
+                </div>
+            </section>
+
+            <!-- 11. Marca de Agua Panel -->
+`;
+
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone } from '../helpers.js';
 
 export function init() {

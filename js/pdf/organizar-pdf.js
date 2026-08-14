@@ -1,6 +1,59 @@
+export const html = `
+<section class="tab-panel" id="panel-organizar-pdf">
+                <div class="panel-header">
+                    <h2>Organizar Páginas de PDF</h2>
+                    <p>Reordena, rota o elimina páginas de tu documento PDF de forma interactiva y visual.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-organizar-pdf">
+                    <input type="file" id="file-organizar-pdf" accept=".pdf" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-folder-tree dropzone-icon"></i>
+                        <h3>Selecciona tu archivo PDF</h3>
+                        <p>Arrastra el archivo o haz clic para buscar</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-organizar-pdf" style="display: none;">
+                    <div class="file-meta">
+                        <i class="fa-solid fa-file-pdf file-type-icon"></i>
+                        <div class="file-details">
+                            <span class="file-name" id="name-organizar-pdf">documento.pdf</span>
+                            <span class="file-size" id="size-organizar-pdf">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-organizar-pdf"><i
+                                class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options">
+                        <h3>Organizar Páginas</h3>
+                        <p class="info-text"><i class="fa-solid fa-arrows-up-down-left-right"></i> Arrastra las páginas
+                            para reordenarlas. Usa los botones para rotar o eliminar.</p>
+
+                        <!-- Page thumbnails grid -->
+                        <div class="pdf-organizer-grid" id="organizer-grid-pdf"></div>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-organizar-pdf" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-organizar-pdf">
+                        <i class="fa-solid fa-file-pdf"></i> Guardar y Descargar PDF
+                    </button>
+                </div>
+            </section>
+
+            <!-- 12c. Comprimir PDF Panel [NEW] -->
+`;
+
+import { loadScript } from '../helpers.js';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone, getEmbeddableImageBytes } from '../helpers.js';
 
-export function init() {
+export async function init() {
+    await Promise.all([
+        loadScript('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js'),
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js')
+    ]);
+
     // TOOL 12b: ORGANIZAR PDF (PDF PAGE ORGANIZER) [NEW]
     // ----------------------------------------------------------------------
     let organizeFile = null;

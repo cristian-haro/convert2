@@ -1,3 +1,53 @@
+export const html = `
+<section class="tab-panel" id="panel-marca-agua">
+                <div class="panel-header">
+                    <h2>Marca de Agua en Imagen</h2>
+                    <p>Aplica un texto personalizado como marca de agua en el centro de tu imagen con transparencia.</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-marca">
+                    <input type="file" id="file-marca" accept="image/*" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-stamp dropzone-icon"></i>
+                        <h3>Selecciona la imagen de origen</h3>
+                        <p>Soporta PNG, JPG, JPEG, WEBP, GIF, BMP</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-marca" style="display: none;">
+                    <div class="file-meta">
+                        <div class="thumbnail-wrapper">
+                            <img id="thumb-marca" class="img-thumbnail" src="" alt="Vista previa">
+                        </div>
+                        <div class="file-details">
+                            <span class="file-name" id="name-marca">imagen.png</span>
+                            <span class="file-size" id="size-marca">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-marca"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options">
+                        <h3>Configuración de la Marca de Agua</h3>
+                        <div class="input-group full-width">
+                            <label for="watermark-text">Texto de la Marca de Agua:</label>
+                            <input type="text" id="watermark-text" value="CONFIDENCIAL"
+                                placeholder="Escribe el texto aquí...">
+                        </div>
+                        <p class="info-text"><i class="fa-solid fa-circle-info"></i> El texto se aplicará de forma
+                            centrada en color negro con transparencia.</p>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-marca" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-marca">
+                        <i class="fa-solid fa-stamp"></i> Aplicar Marca de Agua y Descargar
+                    </button>
+                </div>
+            </section>
+
+            <!-- 11b. Eliminar Fondo Panel [NEW] -->
+`;
+
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone } from '../helpers.js';
 
 export function init() {

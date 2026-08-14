@@ -1,6 +1,56 @@
+export const html = `
+<section class="tab-panel" id="panel-extraer-texto">
+                <div class="panel-header">
+                    <h2>Extraer Texto (PDF & Word DOCX)</h2>
+                    <p>Extrae todo el texto seleccionable de tu archivo PDF o documento de Microsoft Word (.docx) y
+                        descárgalo como texto plano (.txt).</p>
+                </div>
+
+                <div class="dropzone" id="dropzone-extraer">
+                    <input type="file" id="file-extraer" accept=".pdf, .docx" class="file-input">
+                    <div class="dropzone-info">
+                        <i class="fa-solid fa-file-invoice dropzone-icon"></i>
+                        <h3>Selecciona tu archivo PDF o DOCX</h3>
+                        <p>Arrastra el documento o haz clic para buscar</p>
+                    </div>
+                </div>
+
+                <div class="file-preview-card" id="preview-extraer" style="display: none;">
+                    <div class="file-meta">
+                        <i class="fa-solid fa-file-lines file-type-icon" id="icon-type-extraer"></i>
+                        <div class="file-details">
+                            <span class="file-name" id="name-extraer">documento.pdf</span>
+                            <span class="file-size" id="size-extraer">0 KB</span>
+                        </div>
+                        <button class="btn-remove" id="btn-remove-extraer"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+
+                    <div class="tool-options text-extraction-options">
+                        <p class="info-warning"><i class="fa-solid fa-triangle-exclamation"></i> <strong>Nota:</strong>
+                            Para PDFs, no funciona en imágenes escaneadas ("fotos" de páginas sin capa de texto real).
+                            Los archivos Word \`.docx\` se leen en texto bruto.</p>
+                    </div>
+                </div>
+
+                <div class="actions-panel" id="actions-extraer" style="display: none;">
+                    <button class="btn btn-primary" id="btn-run-extraer">
+                        <i class="fa-solid fa-file-lines"></i> Extraer y Descargar Texto (.txt)
+                    </button>
+                </div>
+            </section>
+
+            <!-- 13. Word a PDF Panel [NEW] -->
+`;
+
+import { loadScript } from '../helpers.js';
 import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone } from '../helpers.js';
 
-export function init() {
+export async function init() {
+    await Promise.all([
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js'),
+        loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js')
+    ]);
+
     // TOOL 12: EXTRAER TEXTO (TEXT EXTRACTOR) - PDF & DOCX [EXPANDED]
     // ----------------------------------------------------------------------
     let extractFile = null;
