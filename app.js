@@ -22,6 +22,7 @@ const toolCategories = {
     'marca-agua': 'image',
     'eliminar-fondo': 'image',
     'limpiar-exif': 'image',
+    'cuadrar-img': 'image',
     
     'extraer-texto': 'text',
     'ocr-local': 'text',
@@ -46,7 +47,8 @@ const imageActions = [
     { tabId: 'limpiar-exif', inputId: 'file-limpiar-exif', title: 'Limpiar EXIF', icon: 'fa-user-secret', desc: 'Elimina metadatos privados' },
     { tabId: 'compresor-img', inputId: 'file-compresor-img', title: 'Comprimir Imagen', icon: 'fa-minimize', desc: 'Reduce peso sin perder calidad' },
     { tabId: 'convertir-img', inputId: 'file-convertir-img', title: 'Convertir Imagen', icon: 'fa-image', desc: 'Cambia de formato en lote' },
-    { tabId: 'recortar-img', inputId: 'file-recortar-img', title: 'Recortar y Redim.', icon: 'fa-crop-simple', desc: 'Ajusta tamaño y escala' }
+    { tabId: 'recortar-img', inputId: 'file-recortar-img', title: 'Recortar y Redim.', icon: 'fa-crop-simple', desc: 'Ajusta tamaño y escala' },
+    { tabId: 'cuadrar-img', inputId: 'file-cuadrar-img', title: 'Cuadrar Imagen', icon: 'fa-vector-square', desc: 'Añade márgenes difuminados o sólidos' }
 ];
 
 const wordActions = [
