@@ -1,0 +1,27 @@
+﻿appId: "com.convert2.app.web"
+tags:
+  - e2e
+  - text
+  - ocr
+  - privacy
+---
+# Flow 4: Text Processing, OCR & Privacy Verification
+- openLink: "${APP_URL}"
+- assertVisible: "Convert2"
+
+# 1. Extraer Texto
+- tapOn: "Extraer Texto"
+- assertVisible: "Extraer Texto (PDF & Word DOCX)"
+
+# 2. OCR Local
+- tapOn: "OCR Local"
+- assertVisible: "OCR Local - Reconocimiento de Texto"
+
+# 3. Comparar Textos
+- tapOn: "Comparar Textos"
+- assertVisible: "Comparador Visual de Textos"
+
+# 4. Privacidad Garantizada
+- tapOn: "Privacidad"
+- assertVisible: "Privacidad y Seguridad"
+- assertVisible: "100% Local"

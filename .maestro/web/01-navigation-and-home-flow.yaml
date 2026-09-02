@@ -1,0 +1,30 @@
+﻿appId: "com.convert2.app.web"
+tags:
+  - e2e
+  - navigation
+  - home
+---
+# Flow 1: Home Dashboard & Navigation Smoke Test
+- openLink: "${APP_URL}"
+- assertVisible: "Convert2"
+- assertVisible: "Caja de Herramientas Local y Privada"
+- assertVisible: "Documentos PDF"
+- assertVisible: "Edición de Imágenes"
+- assertVisible: "Texto y Oficina"
+
+# Test navigation to PDF tool
+- tapOn: "Unir PDF"
+- assertVisible: "Unir Archivos PDF"
+- assertVisible: "Arrastra tus PDFs aquí"
+
+# Test navigation to Image tool
+- tapOn: "Convertir Imagen"
+- assertVisible: "Convertir Formato de Imagen"
+
+# Test navigation to Text tool
+- tapOn: "Extraer Texto"
+- assertVisible: "Extraer Texto (PDF & Word DOCX)"
+
+# Return to Home
+- tapOn: "Convert2"
+- assertVisible: "Caja de Herramientas Local y Privada"

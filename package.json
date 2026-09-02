@@ -1,10 +1,12 @@
-﻿{
+{
   "name": "convert2",
   "version": "1.0.0",
   "description": "Herramienta multifuncional y privada de archivos (PDF, Word, Imagenes)",
   "type": "module",
   "scripts": {
     "test": "node --test tests/**/*.test.js",
+    "test:unit": "node tests/run-all-tests.js",
+    "test:maestro": "node ../spike/maestro-engine.mjs .maestro/web/01-navigation-and-home-flow.yaml",
     "qa": "node tests/run-all-tests.js"
   },
   "keywords": [

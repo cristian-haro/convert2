@@ -1,0 +1,37 @@
+﻿appId: "com.convert2.app.web"
+tags:
+  - e2e
+  - pdf
+  - document-tools
+---
+# Flow 2: Comprehensive PDF Tools Verification
+- openLink: "${APP_URL}"
+- assertVisible: "Convert2"
+
+# 1. Separar PDF
+- tapOn: "Separar PDF"
+- assertVisible: "Separar PDF"
+
+# 2. Rotar PDF
+- tapOn: "Rotar PDF"
+- assertVisible: "Rotar Páginas de PDF"
+
+# 3. Imágenes a PDF
+- tapOn: "Imágenes a PDF"
+- assertVisible: "Imágenes a PDF"
+
+# 4. Firmar PDF
+- tapOn: "Firmar PDF"
+- assertVisible: "Firmar PDF"
+
+# 5. Proteger PDF
+- tapOn: "Proteger PDF"
+- assertVisible: "Proteger / Desproteger PDF"
+
+# 6. Organizar PDF
+- tapOn: "Organizar PDF"
+- assertVisible: "Organizar Páginas de PDF"
+
+# 7. Comprimir PDF
+- tapOn: "Comprimir PDF"
+- assertVisible: "Comprimir Archivo PDF"

@@ -1,0 +1,37 @@
+﻿appId: "com.convert2.app.web"
+tags:
+  - e2e
+  - image
+  - media-tools
+---
+# Flow 3: Comprehensive Image Tools Verification
+- openLink: "${APP_URL}"
+- assertVisible: "Convert2"
+
+# 1. Convertir Imagen
+- tapOn: "Convertir Imagen"
+- assertVisible: "Convertir Formato de Imagen"
+
+# 2. Comprimir Imagen
+- tapOn: "Comprimir Imagen"
+- assertVisible: "Comprimir Imagen"
+
+# 3. Recortar y Redimensionar
+- tapOn: "Recortar y Redim."
+- assertVisible: "Recortar y Redimensionar Imagen"
+
+# 4. Marca de Agua
+- tapOn: "Marca de Agua"
+- assertVisible: "Marca de Agua en Imagen"
+
+# 5. Eliminar Fondo (IA Local)
+- tapOn: "Eliminar Fondo"
+- assertVisible: "Eliminar Fondo de Imagen"
+
+# 6. Limpiar EXIF
+- tapOn: "Limpiar EXIF"
+- assertVisible: "Limpiar Metadatos EXIF"
+
+# 7. Cuadrar Imagen
+- tapOn: "Cuadrar Imagen"
+- assertVisible: "Ajustar Lienzo / Cuadrar Imagen"
