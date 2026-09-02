@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     let fileType = 'unknown';
                     if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
                         const type = e.dataTransfer.items[0].type;
-                        if (type === 'application/pdf' || type.endsWith('/pdf')) {
+                        if (type.includes('pdf')) {
                             fileType = 'pdf';
                         } else if (type.startsWith('image/')) {
                             fileType = 'image';
