@@ -298,6 +298,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Global Escape Key Listener for Accessibility (close overlay / sidebar)
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (dragOverlay && dragOverlay.classList.contains('visible')) {
+                dragCounter = 0;
+                dragOverlay.classList.remove('visible');
+                setTimeout(() => {
+                    dragOverlay.style.display = 'none';
+                }, 350);
+            }
+            if (sidebar && sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        }
+    });
+
     // ----------------------------------------------------------------------
     // LOAD INITIAL ACTIVE TOOL
     // ----------------------------------------------------------------------
