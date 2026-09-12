@@ -4,6 +4,8 @@
   "description": "Herramienta multifuncional y privada de archivos (PDF, Word, Imagenes)",
   "type": "module",
   "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
     "test": "node --test tests/**/*.test.js",
     "test:unit": "node tests/run-all-tests.js",
     "test:maestro": "node ../spike/maestro-engine.mjs .maestro/web/01-navigation-and-home-flow.yaml",

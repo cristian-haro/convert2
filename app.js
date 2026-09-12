@@ -36,19 +36,19 @@ const loadedTools = new Set();
 
 // Actions for Global Drag and Drop Overlay
 const pdfActions = [
-    { tabId: 'unir-pdf', inputId: 'file-unir-pdf', title: 'Unir PDF', icon: 'fa-object-group', desc: 'Combina múltiples PDFs' },
-    { tabId: 'separar-pdf', inputId: 'file-separar-pdf', title: 'Separar PDF', icon: 'fa-scissors', desc: 'Extrae páginas' },
+    { tabId: 'unir-pdf', inputId: 'file-unir', title: 'Unir PDF', icon: 'fa-object-group', desc: 'Combina múltiples PDFs' },
+    { tabId: 'separar-pdf', inputId: 'file-separar', title: 'Separar PDF', icon: 'fa-scissors', desc: 'Extrae páginas' },
     { tabId: 'organizar-pdf', inputId: 'file-organizar-pdf', title: 'Organizar PDF', icon: 'fa-folder-tree', desc: 'Reordena o rota páginas' },
     { tabId: 'compresor-pdf', inputId: 'file-compresor-pdf', title: 'Comprimir PDF', icon: 'fa-compress', desc: 'Reduce el tamaño del archivo' },
-    { tabId: 'firmar-pdf', inputId: 'file-firmar-pdf', title: 'Firmar PDF', icon: 'fa-signature', desc: 'Añade firmas manuscritas' }
+    { tabId: 'firmar-pdf', inputId: 'file-firmar', title: 'Firmar PDF', icon: 'fa-signature', desc: 'Añade firmas manuscritas' }
 ];
 
 const imageActions = [
     { tabId: 'eliminar-fondo', inputId: 'file-eliminar-fondo', title: 'Eliminar Fondo', icon: 'fa-wand-magic-sparkles', desc: 'Quita el fondo con IA local' },
     { tabId: 'limpiar-exif', inputId: 'file-limpiar-exif', title: 'Limpiar EXIF', icon: 'fa-user-secret', desc: 'Elimina metadatos privados' },
-    { tabId: 'compresor-img', inputId: 'file-compresor-img', title: 'Comprimir Imagen', icon: 'fa-minimize', desc: 'Reduce peso sin perder calidad' },
-    { tabId: 'convertir-img', inputId: 'file-convertir-img', title: 'Convertir Imagen', icon: 'fa-image', desc: 'Cambia de formato en lote' },
-    { tabId: 'recortar-img', inputId: 'file-recortar-img', title: 'Recortar y Redim.', icon: 'fa-crop-simple', desc: 'Ajusta tamaño y escala' },
+    { tabId: 'compresor-img', inputId: 'file-compresor', title: 'Comprimir Imagen', icon: 'fa-minimize', desc: 'Reduce peso sin perder calidad' },
+    { tabId: 'convertir-img', inputId: 'file-convertir', title: 'Convertir Imagen', icon: 'fa-image', desc: 'Cambia de formato en lote' },
+    { tabId: 'recortar-img', inputId: 'file-recortar', title: 'Recortar y Redim.', icon: 'fa-crop-simple', desc: 'Ajusta tamaño y escala' },
     { tabId: 'cuadrar-img', inputId: 'file-cuadrar-img', title: 'Cuadrar Imagen', icon: 'fa-vector-square', desc: 'Añade márgenes difuminados o sólidos' }
 ];
 
@@ -57,9 +57,9 @@ const wordActions = [
 ];
 
 const fallbackActions = [
-    { tabId: 'unir-pdf', inputId: 'file-unir-pdf', title: 'Unir PDF', icon: 'fa-object-group', desc: 'Combina múltiples PDFs' },
-    { tabId: 'convertir-img', inputId: 'file-convertir-img', title: 'Convertir Imagen', icon: 'fa-image', desc: 'Cambia de formato en lote' },
-    { tabId: 'comparar-textos', inputId: 'file-comparar-textos', title: 'Comparar Textos', icon: 'fa-columns', desc: 'Compara diferencias visuales' }
+    { tabId: 'unir-pdf', inputId: 'file-unir', title: 'Unir PDF', icon: 'fa-object-group', desc: 'Combina múltiples PDFs' },
+    { tabId: 'convertir-img', inputId: 'file-convertir', title: 'Convertir Imagen', icon: 'fa-image', desc: 'Cambia de formato en lote' },
+    { tabId: 'extraer-texto', inputId: 'file-extraer', title: 'Extraer Texto', icon: 'fa-file-lines', desc: 'Extrae contenido de texto' }
 ];
 
 async function loadTool(tabId) {
