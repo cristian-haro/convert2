@@ -1,6 +1,6 @@
-﻿import { test, describe } from 'node:test';
+import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
-import { formatBytes } from '../js/helpers.js';
+import { formatBytes, isHeicFile } from '../js/helpers.js';
 
 describe('Helper Utilities - Cross-Platform QA', () => {
     describe('formatBytes()', () => {
@@ -34,4 +34,26 @@ describe('Helper Utilities - Cross-Platform QA', () => {
             assert.equal(formatBytes(1536, -1), '2 KB');
         });
     });
+
+    describe('isHeicFile()', () => {
+        test('identifies .heic and .heif extensions correctly', () => {
+            assert.equal(isHeicFile({ name: 'photo.heic', type: '' }), true);
+            assert.equal(isHeicFile({ name: 'PHOTO.HEIC', type: '' }), true);
+            assert.equal(isHeicFile({ name: 'image.heif', type: '' }), true);
+            assert.equal(isHeicFile({ name: 'IMAGE.HEIF', type: '' }), true);
+        });
+
+        test('identifies image/heic and image/heif MIME types', () => {
+            assert.equal(isHeicFile({ name: 'blob', type: 'image/heic' }), true);
+            assert.equal(isHeicFile({ name: 'blob', type: 'image/heif' }), true);
+        });
+
+        test('returns false for non-HEIC files', () => {
+            assert.equal(isHeicFile({ name: 'photo.jpg', type: 'image/jpeg' }), false);
+            assert.equal(isHeicFile({ name: 'doc.pdf', type: 'application/pdf' }), false);
+            assert.equal(isHeicFile(null), false);
+            assert.equal(isHeicFile(undefined), false);
+        });
+    });
 });
+

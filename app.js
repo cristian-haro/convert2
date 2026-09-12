@@ -242,10 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (dragCounter === 1) {
                     let fileType = 'unknown';
                     if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
-                        const type = e.dataTransfer.items[0].type;
+                        const type = (e.dataTransfer.items[0].type || '').toLowerCase();
                         if (type.includes('pdf')) {
                             fileType = 'pdf';
-                        } else if (type.startsWith('image/')) {
+                        } else if (type.startsWith('image/') || type.includes('heic') || type.includes('heif')) {
                             fileType = 'image';
                         } else if (type.includes('wordprocessingml') || type.includes('msword') || type.includes('officedocument')) {
                             fileType = 'word';

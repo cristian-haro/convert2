@@ -61,24 +61,80 @@ export function downloadBlob(blob, filename) {
     URL.revokeObjectURL(url);
 }
 
+export function isHeicFile(file) {
+    if (!file) return false;
+    const name = (file.name || '').toLowerCase();
+    const type = (file.type || '').toLowerCase();
+    return type === 'image/heic' || type === 'image/heif' || name.endsWith('.heic') || name.endsWith('.heif');
+}
+
+export async function convertHeicToBlob(file, toType = 'image/jpeg', quality = 0.92) {
+    if (typeof window !== 'undefined' && !window.heic2any) {
+        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js');
+    }
+    const result = await window.heic2any({
+        blob: file,
+        toType: toType,
+        quality: quality
+    });
+    return Array.isArray(result) ? result[0] : result;
+}
+
+export async function loadImageElement(fileOrBlob) {
+    let sourceBlob = fileOrBlob;
+    if (isHeicFile(fileOrBlob)) {
+        sourceBlob = await convertHeicToBlob(fileOrBlob, 'image/jpeg', 0.95);
+    }
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        const url = URL.createObjectURL(sourceBlob);
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            resolve(img);
+        };
+        img.onerror = (e) => {
+            URL.revokeObjectURL(url);
+            reject(new Error('Failed to load image'));
+        };
+        img.src = url;
+    });
+}
+
 export async function getEmbeddableImageBytes(file) {
-    const ext = file.name.split('.').pop().toLowerCase();
+    if (isHeicFile(file)) {
+        const convertedBlob = await convertHeicToBlob(file, 'image/jpeg', 0.95);
+        return {
+            bytes: new Uint8Array(await convertedBlob.arrayBuffer()),
+            type: 'jpg'
+        };
+    }
+    const ext = file.name ? file.name.split('.').pop().toLowerCase() : '';
     if (ext === 'png' || ext === 'jpg' || ext === 'jpeg') {
         return { bytes: new Uint8Array(await file.arrayBuffer()), type: ext === 'png' ? 'png' : 'jpg' };
     }
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         const img = new Image();
+        const url = URL.createObjectURL(file);
         img.onload = () => {
             const canvas = document.createElement('canvas');
             canvas.width = img.width;
             canvas.height = img.height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0);
+            URL.revokeObjectURL(url);
             canvas.toBlob(async (blob) => {
+                if (!blob) {
+                    reject(new Error('Failed to create image blob'));
+                    return;
+                }
                 resolve({ bytes: new Uint8Array(await blob.arrayBuffer()), type: 'png' });
             }, 'image/png');
         };
-        img.src = URL.createObjectURL(file);
+        img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error('Failed to load image for embedding'));
+        };
+        img.src = url;
     });
 }
 

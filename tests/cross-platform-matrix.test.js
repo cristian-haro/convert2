@@ -1,4 +1,4 @@
-﻿import { test, describe } from 'node:test';
+import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -48,6 +48,8 @@ describe('Cross-Platform QA & Compatibility Matrix', () => {
             assert.equal(detectFileType('image/gif'), 'image');
             assert.equal(detectFileType('image/bmp'), 'image');
             assert.equal(detectFileType('image/x-icon'), 'image');
+            assert.equal(detectFileType('image/heic'), 'image');
+            assert.equal(detectFileType('image/heif'), 'image');
         });
 
         test('identifies Microsoft Word (.docx/.doc) MIME types', () => {

@@ -5,14 +5,14 @@ export const html = `
                     <p>Une múltiples fotos e imágenes y conviértelas en un único documento PDF ordenado.</p>
                 </div>
 
-                <div class="dropzone" id="dropzone-img-to-pdf">
-                    <input type="file" id="file-img-to-pdf" multiple accept="image/*" class="file-input">
-                    <div class="dropzone-info">
-                        <i class="fa-solid fa-images dropzone-icon"></i>
-                        <h3>Arrastra tus imágenes aquí</h3>
-                        <p>Soporta PNG, JPG, JPEG, BMP, WEBP</p>
-                    </div>
-                </div>
+    <div class="dropzone" id="dropzone-img-to-pdf">
+        <input type="file" id="file-img-to-pdf" multiple accept="image/*,.heic,.heif" class="file-input">
+        <div class="dropzone-info">
+            <i class="fa-solid fa-images dropzone-icon"></i>
+            <h3>Arrastra tus imágenes aquí</h3>
+            <p>Soporta PNG, JPG, JPEG, BMP, WEBP y HEIC/HEIF</p>
+        </div>
+    </div>
 
                 <div class="files-list-container" id="list-container-img-to-pdf" style="display: none;">
                     <h3>Imágenes seleccionadas (<span id="count-img-to-pdf">0</span>)</h3>
@@ -30,7 +30,7 @@ export const html = `
 `;
 
 import { loadScript } from '../helpers.js';
-import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone, getEmbeddableImageBytes } from '../helpers.js';
+import { formatBytes, showToast, showLoader, hideLoader, downloadBlob, setupDropzone, getEmbeddableImageBytes, isHeicFile, convertHeicToBlob } from '../helpers.js';
 
 export async function init() {
     await loadScript('https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js');
@@ -39,14 +39,22 @@ export async function init() {
     // ----------------------------------------------------------------------
     let imgToPdfList = [];
 
+    function isSupportedImage(file) {
+        if (!file) return false;
+        if (isHeicFile(file)) return true;
+        if (file.type && file.type.startsWith('image/')) return true;
+        const ext = (file.name || '').split('.').pop().toLowerCase();
+        return ['png', 'jpg', 'jpeg', 'webp', 'bmp', 'heic', 'heif', 'gif'].includes(ext);
+    }
+
     setupDropzone('dropzone-img-to-pdf', 'file-img-to-pdf', (files) => {
         for (let file of files) {
-            if (file.type.startsWith('image/')) {
+            if (isSupportedImage(file)) {
                 if (!imgToPdfList.some(f => f.name === file.name && f.size === file.size)) {
                     imgToPdfList.push(file);
                 }
             } else {
-                showToast(`El archivo "${file.name}" no es una imagen válida`, 'warning');
+                showToast(`El archivo "${file.name}" no es una imagen compatible`, 'warning');
             }
         }
         updateImgToPdfUI();
@@ -76,12 +84,24 @@ export async function init() {
                 thumbWrapper.className = 'thumbnail-wrapper';
                 const imgThumb = document.createElement('img');
                 imgThumb.className = 'img-thumbnail';
-                imgThumb.src = URL.createObjectURL(file);
+                imgThumb.alt = file.name;
+
+                const isHeic = isHeicFile(file);
+                if (isHeic) {
+                    imgThumb.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="%238b5cf6" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
+                    convertHeicToBlob(file, 'image/jpeg', 0.6).then(blob => {
+                        imgThumb.src = URL.createObjectURL(blob);
+                    }).catch(e => console.warn(e));
+                } else {
+                    imgThumb.src = URL.createObjectURL(file);
+                }
                 thumbWrapper.appendChild(imgThumb);
                 
+                const heicBadge = isHeic ? '<span style="background: rgba(139, 92, 246, 0.2); color: #a78bfa; padding: 2px 6px; border-radius: 4px; font-size: 0.72rem; font-weight: 700; margin-left: 6px; border: 1px solid rgba(139, 92, 246, 0.4);">HEIC</span>' : '';
+
                 li.innerHTML = `
                     <div class="file-info-group">
-                        <span class="file-item-name" title="${file.name}">${file.name}</span>
+                        <span class="file-item-name" title="${file.name}">${file.name} ${heicBadge}</span>
                         <span class="file-item-size">${formatBytes(file.size)}</span>
                     </div>
                     <div class="file-order-controls">
